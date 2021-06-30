@@ -18,20 +18,22 @@ export TF_VAR_location="East US"
 
 TODO: make it possible to pass an existing AML workspace into the setup script as an argument.
 
-Run the setup script.
+Clone this repo and run the setup script.
+
+TODO: make this work
+
 ```
+git clone https://github.com/pachyderm/aml
+cd aml
 bash scripts/setup.sh
 ```
 
-Note, while provisioning AKS, if you encounter an error message like
-`Operation could not be completed as it results in exceeding approved Total Regional Cores quota`,
-then try changing the Azure region.
 
 ## Step 2 - Update rslex on your AML Compute
 
 Note: this step will no longer be necessary after Microsoft release a new version of rslex.
 
-From an AML notebook, connect to the compute instance you want to use with Pachyderm, and run:
+From an AML notebook (create a new file in the "Notebooks" tab), connect to the compute instance you want to use with Pachyderm, and run:
 
 ```
 !curl -sSL https://raw.githubusercontent.com/pachyderm/aml/main/scripts/hack-my-compute.sh | sh
