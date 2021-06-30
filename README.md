@@ -34,11 +34,10 @@ Note: this step will no longer be necessary after Microsoft release a new versio
 From an AML notebook, connect to the compute instance you want to use with Pachyderm, and run:
 
 ```
-!curl -sSL https://get.amlpachyderm.io | sh
+!curl -sSL https://raw.githubusercontent.com/pachyderm/aml/main/scripts/hack-my-compute.sh | sh
 ```
 
-
-
+Now proceed with the demo...
 
 ## Demo
 
