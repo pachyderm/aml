@@ -92,8 +92,8 @@ resource "local_file" "env" {
 
 # azureml instance
 export AZURE_SUBSCRIPTION_ID="${data.azurerm_client_config.current.subscription_id}"
-export AZURE_RESOURCE_GROUP="${azurerm_resource_group.main[0].name}"
-export AZURE_ML_WORKSPACE_NAME="${azurerm_machine_learning_workspace.example[0].name}"
+export AZURE_RESOURCE_GROUP="${local.resource_group_name}"
+export AZURE_ML_WORKSPACE_NAME="${local.machine_learning_workspace_id}"
 
 # storage for pachyderm
 export AZURE_STORAGE_CONTAINER="${azurerm_storage_container.pachyderm.name}"
@@ -112,9 +112,9 @@ output "azure_subscription_id" {
 }
 
 output "azure_resource_group" {
-  value = azurerm_resource_group.main[0].name
+  value = local.resource_group_name
 }
 
 output "azure_ml_workspace_name" {
-  value = azurerm_machine_learning_workspace.example[0].name
+  value = local.machine_learning_workspace_name
 }

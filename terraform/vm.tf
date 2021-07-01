@@ -32,8 +32,8 @@ resource "azurerm_network_interface" "internal" {
 
 resource "azurerm_network_security_group" "ssh" {
   name                = "ssh"
-  location            = local.resource_group_name
-  resource_group_name = local.resource_group_location
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
   security_rule {
     access                     = "Allow"
     direction                  = "Inbound"
