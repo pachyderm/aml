@@ -1,2 +1,13 @@
 *.sw*
 .terraform.lock.hcl
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+scripts/env.sh
+terraform/kubeconfig
+
