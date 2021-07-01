@@ -31,13 +31,12 @@ Log into Azure:
 az login
 ```
 
-Set up Terraform environment variables:
+Choose where you want to deploy Pachyderm and the syncer:
 ```
-export TF_VAR_prefix="foo" # short descriptive name for your deployment
 export TF_VAR_location="East US"
 ```
 
-If you're deploying with an existing AzureML workspace, the location above must match.
+If you're deploying with an existing AzureML workspace, the location above should match where your workspace is.
 
 Now we'll deploy the syncer VM and the AKS cluster and start Pachyderm on it.
 
