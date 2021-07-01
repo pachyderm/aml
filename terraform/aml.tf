@@ -47,6 +47,5 @@ data "azurerm_machine_learning_workspace" "existing" {
 
 locals {
   machine_learning_workspace_id = var.existing_workspace_name == "" ? azurerm_machine_learning_workspace.example[0].id : data.azurerm_machine_learning_workspace.existing[0].id
-  machine_learning_workspace_name = var.existing_workspace_name == "" ?
-azurerm_machine_learning_workspace.example[0].name : var.existing_workspace_name
+  machine_learning_workspace_name = var.existing_workspace_name == "" ? azurerm_machine_learning_workspace.example[0].name : var.existing_workspace_name
 }
