@@ -36,7 +36,7 @@ Note: this step will no longer be necessary after Microsoft release a new versio
 From an AML notebook (create a new file in the "Notebooks" tab), connect to the compute instance you want to use with Pachyderm, and run:
 
 ```
-!curl -sSL https://raw.githubusercontent.com/pachyderm/aml/main/scripts/hack-my-compute.sh | sh
+!curl -sSL https://raw.githubusercontent.com/pachyderm/aml/main/scripts/install-rslex-pachyderm-beta.sh | sh
 ```
 
 Now proceed with the demo...
