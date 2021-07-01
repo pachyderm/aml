@@ -4,10 +4,19 @@
 
 How to set up AML with Pachyderm:
 
-## Step 1 - Deploy stack
+## Requirements
 
+* You need to be running Linux/MacOS/WSL on your local machine
 * Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 * Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+
+## Step 1 - Deploy stack
+
+Clone this repo.
+
+```
+git clone https://github.com/pachyderm/aml
+```
 
 Log into Azure:
 ```
@@ -20,13 +29,6 @@ export TF_VAR_prefix=foo # short descriptive name for your deployment
 export TF_VAR_location="East US"
 ```
 
-Clone this repo and run the setup script.
-
-```
-git clone https://github.com/pachyderm/aml
-cd aml
-```
-
 ### Option 1: Automatically create a new AzureML workspace and resource group:
 
 ```
@@ -35,8 +37,7 @@ bash scripts/setup.sh
 
 ### Option 2: Integrate Pachyderm with an existing AzureML workspace:
 
-Set the resource_group_name variable to an existing Azure resource group.
-If you're attaching AzureML-Pachyderm to an existing AzureML workspace, you must specify the same resource group that the target AzureML workspace is in here:
+If you're attaching AzureML-Pachyderm to an existing AzureML workspace, you must specify the same resource group that the target AzureML workspace is in here, as well as specifying the workspace name:
 
 ```
 export TF_VAR_existing_resource_group_name="existing-resource-group"
@@ -44,7 +45,7 @@ export TF_VAR_existing_workspace_name="existing-workspace"
 bash scripts/setup.sh
 ```
 
-You can also create a new AzureML workspace in an existing resource group by only specifying `TF_VAR_existing_resource_group_name` but not `TF_VAR_existing_workspace_name`.
+(You can also create a new AzureML workspace in an existing resource group by only specifying `TF_VAR_existing_resource_group_name` but not `TF_VAR_existing_workspace_name`.)
 
 
 ## Step 2 - Update rslex on your AML Compute
@@ -88,4 +89,4 @@ ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$insta
 '
 ```
 
-Now re-run the Consume code and show that it's updated, but then as the a-ha moment go back to the previous version and add `version="1"` to the Python code and show that you see the old version of the data - a-ha! Reproducibility!
+Now re-run the Consume code and show that it's updated, but then as the a-ha moment go back to the previous version and add `version="1"` to the Python code and show that you see the old version of the data - a-ha! Data versioning & reproducibility!
