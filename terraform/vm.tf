@@ -1,12 +1,12 @@
 resource "azurerm_public_ip" "pip" {
-  name                = "${var.prefix}-pip"
+  name                = "publicip-${random_id.deployment.hex}"
   resource_group_name = local.resource_group_name
   location            = local.resource_group_location
   allocation_method   = "Dynamic"
 }
 
 resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic1"
+  name                = "nic1-${random_id.deployment.hex}"
   resource_group_name = local.resource_group_name
   location            = local.resource_group_location
 
@@ -19,7 +19,7 @@ resource "azurerm_network_interface" "main" {
 }
 
 resource "azurerm_network_interface" "internal" {
-  name                      = "${var.prefix}-nic2"
+  name                      = "nic2-${random_id.deployment.hex}"
   resource_group_name       = local.resource_group_name
   location                  = local.resource_group_location
 
@@ -31,7 +31,7 @@ resource "azurerm_network_interface" "internal" {
 }
 
 resource "azurerm_network_security_group" "ssh" {
-  name                = "ssh"
+  name                = "ssh-${random_id.deployment.hex}"
   location            = local.resource_group_location
   resource_group_name = local.resource_group_name
   security_rule {
@@ -53,7 +53,7 @@ resource "azurerm_network_interface_security_group_association" "main" {
 }
 
 resource "azurerm_linux_virtual_machine" "syncer" {
-  name                            = "${var.prefix}-vm"
+  name                            = "vm-${random_id.deployment.hex}"
   resource_group_name             = local.resource_group_name
   location                        = local.resource_group_location
   size                            = "Standard_D3_v2"

@@ -23,7 +23,7 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "main" {
   count = var.existing_resource_group_name == "" ? 1 : 0
-  name     = "${var.prefix}-resources"
+  name     = "resources-${random_id.deployment.hex}"
   location = var.location
 }
 
@@ -41,7 +41,7 @@ locals {
 # Create a virtual network within the resource group
 
 resource "azurerm_virtual_network" "main" {
-  name                = "${var.prefix}-network"
+  name                = "network-${random_id.deployment.hex}"
   address_space       = ["10.0.0.0/16"]
   location            = local.resource_group_location
   resource_group_name = local.resource_group_name
@@ -49,7 +49,7 @@ resource "azurerm_virtual_network" "main" {
 
 # subnet for the vm
 resource "azurerm_subnet" "internal" {
-  name                 = "internal"
+  name                 = "internal-${random_id.deployment.hex}"
   resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.2.0/24"]
@@ -57,7 +57,7 @@ resource "azurerm_subnet" "internal" {
 
 # subnet for the aks cluster and aml to share
 #resource "azurerm_subnet" "internal2" {
-#  name                 = "internal2"
+#  name                 = "internal2-${random_id.deployment.hex}"
 #  resource_group_name  = local.resource_group_name
 #  virtual_network_name = azurerm_virtual_network.main.name
 #  address_prefixes     = ["10.0.2.0/24"]
@@ -70,21 +70,6 @@ resource "azurerm_role_assignment" "example" {
   role_definition_name = "Contributor"
   principal_id         = azurerm_linux_virtual_machine.syncer.identity[0].principal_id
 }
-
-/*
-
-Variables needed for syncer:
-
-AZURE_SUBSCRIPTION_ID
-AZURE_RESOURCE_GROUP
-AZURE_ML_WORKSPACE_NAME
-
-Also:
-
-PACHD_SERVICE_HOST
-PACHD_SERVICE_PORT
-
-*/
 
 resource "local_file" "env" {
   filename = "${path.module}/../scripts/env.sh"
@@ -100,7 +85,6 @@ export AZURE_STORAGE_CONTAINER="${azurerm_storage_container.pachyderm.name}"
 export AZURE_STORAGE_ACCOUNT_NAME="${azurerm_storage_account.pachyderm.name}"
 export AZURE_STORAGE_ACCOUNT_KEY="${azurerm_storage_account.pachyderm.primary_access_key}"
 
-# TODO: fill these in
 export PACHD_SERVICE_HOST="localhost"
 export PACHD_SERVICE_PORT="30650"
 

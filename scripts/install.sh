@@ -64,5 +64,20 @@ if [ ! -e /proc/$pid/cmdline ]; then
     exit 1
 fi
 
-echo "Starting syncer"
-python3 syncer/sync.py
+#echo "Starting syncer"
+#python3 syncer/sync.py
+
+cat << EOF > /etc/systemd/system/pachyderm-aml-syncer.service
+[Unit]
+Description=Pachyderm AzureML Syncer
+[Service]
+User=root
+WorkingDirectory=/home/ubuntu
+ExecStart=/bin/bash -c "source /home/ubuntu/scripts/env.sh; /usr/bin/python3 /home/ubuntu/syncer/sync.py"
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl start pachyderm-aml-syncer

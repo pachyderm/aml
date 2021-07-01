@@ -1,8 +1,8 @@
 resource "azurerm_kubernetes_cluster" "example" {
-  name                = "${var.prefix}-example-aks1"
+  name                = "pachyderm-${random_id.deployment.hex}"
   location            = local.resource_group_location
   resource_group_name = local.resource_group_name
-  dns_prefix          = "exampleaks1"
+  dns_prefix          = "pachydermaks"
 
   default_node_pool {
     name       = "default"

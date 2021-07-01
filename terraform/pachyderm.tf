@@ -9,16 +9,7 @@ resource "azurerm_storage_account" "pachyderm" {
 }
 
 resource "azurerm_storage_container" "pachyderm" {
-  name                  = "pachyderm"
+  name                  = "pachyderm-${random_id.deployment.hex}"
   storage_account_name  = azurerm_storage_account.pachyderm.name
   container_access_type = "private"
 }
-
-/*
-output "storage_access_key" {
-  value = azurerm_storage_account.pachyderm.primary_access_key
-}
-output "storage_account_name" {
-  value = azurerm_storage_account.pachyderm.name
-}
-*/
