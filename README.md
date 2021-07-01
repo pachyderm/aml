@@ -26,7 +26,7 @@ az login
 
 Set up Terraform environment variables:
 ```
-export TF_VAR_prefix=foo # short descriptive name for your deployment
+export TF_VAR_prefix="foo" # short descriptive name for your deployment
 export TF_VAR_location="East US"
 ```
 
