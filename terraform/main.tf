@@ -17,6 +17,8 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_client_config" "current" {}
+
 # Create or lookup a resource group
 
 resource "azurerm_resource_group" "main" {
@@ -25,24 +27,30 @@ resource "azurerm_resource_group" "main" {
   location = var.location
 }
 
-data "azurerm_resource_group" "main" {
+data "azurerm_resource_group" "existing" {
   count = var.existing_resource_group_name == "" ? 0 : 1
   name = var.existing_resource_group_name
 }
+
+locals {
+  resource_group_name = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].name : data.azurerm_resource_group.existing[0].name
+  resource_group_location = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].location : data.azurerm_resource_group.existing[0].location
+}
+
 
 # Create a virtual network within the resource group
 
 resource "azurerm_virtual_network" "main" {
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 }
 
 # subnet for the vm
 resource "azurerm_subnet" "internal" {
   name                 = "internal"
-  resource_group_name  = azurerm_resource_group.main.name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.2.0/24"]
 }
@@ -50,27 +58,15 @@ resource "azurerm_subnet" "internal" {
 # subnet for the aks cluster and aml to share
 #resource "azurerm_subnet" "internal2" {
 #  name                 = "internal2"
-#  resource_group_name  = azurerm_resource_group.main.name
+#  resource_group_name  = local.resource_group_name
 #  virtual_network_name = azurerm_virtual_network.main.name
 #  address_prefixes     = ["10.0.2.0/24"]
 #}
 
-
-data "azurerm_client_config" "current" {}
-
-data "azurerm_machine_learning_workspace" "workspace" {
-  name                = "example-workspace"
-  resource_group_name = "example-resources"
-}
-
-output "id" {
-  value = azurerm_machine_learning_workspace.existing.id
-}
-
 # Role assignment from VM -> AML
 
 resource "azurerm_role_assignment" "example" {
-  scope                = azurerm_machine_learning_workspace.example.id
+  scope                = local.machine_learning_workspace_id
   role_definition_name = "Contributor"
   principal_id         = azurerm_linux_virtual_machine.syncer.identity[0].principal_id
 }
@@ -96,8 +92,8 @@ resource "local_file" "env" {
 
 # azureml instance
 export AZURE_SUBSCRIPTION_ID="${data.azurerm_client_config.current.subscription_id}"
-export AZURE_RESOURCE_GROUP="${azurerm_resource_group.main.name}"
-export AZURE_ML_WORKSPACE_NAME="${azurerm_machine_learning_workspace.example.name}"
+export AZURE_RESOURCE_GROUP="${azurerm_resource_group.main[0].name}"
+export AZURE_ML_WORKSPACE_NAME="${azurerm_machine_learning_workspace.example[0].name}"
 
 # storage for pachyderm
 export AZURE_STORAGE_CONTAINER="${azurerm_storage_container.pachyderm.name}"
@@ -116,9 +112,9 @@ output "azure_subscription_id" {
 }
 
 output "azure_resource_group" {
-  value = azurerm_resource_group.main.name
+  value = azurerm_resource_group.main[0].name
 }
 
 output "azure_ml_workspace_name" {
-  value = azurerm_machine_learning_workspace.example.name
+  value = azurerm_machine_learning_workspace.example[0].name
 }
