@@ -18,7 +18,7 @@ resource "azurerm_key_vault" "example" {
 
 resource "azurerm_storage_account" "example" {
   count = var.existing_workspace_name == "" ? 1 : 0
-  name                     = "storageaml-${random_id.deployment.hex}"
+  name                     = "storageaml${random_id.deployment.hex}"
   location                 = local.resource_group_location
   resource_group_name      = local.resource_group_name
   account_tier             = "Standard"

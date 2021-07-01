@@ -1,7 +1,7 @@
 // Storage for pachyderm cluster
 
 resource "azurerm_storage_account" "pachyderm" {
-  name                     = "pachyderm-${random_id.deployment.hex}"
+  name                     = "pachyderm${random_id.deployment.hex}"
   resource_group_name      = local.resource_group_name
   location                 = local.resource_group_location
   account_tier             = "Standard"
