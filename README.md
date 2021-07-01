@@ -1,4 +1,6 @@
-# How to set up AML with Pachyderm
+# Pachyderm-AzureML integration: Private Preview Instructions
+
+How to set up AML with Pachyderm:
 
 ## Step 1 - Deploy stack
 
@@ -12,21 +14,35 @@ az login
 
 Set up Terraform environment variables:
 ```
-export TF_VAR_prefix=foo
+export TF_VAR_prefix=foo # short descriptive name for your deployment
 export TF_VAR_location="East US"
 ```
 
-TODO: make it possible to pass an existing AML workspace into the setup script as an argument.
-
 Clone this repo and run the setup script.
-
-TODO: make this work
 
 ```
 git clone https://github.com/pachyderm/aml
 cd aml
+```
+
+### Option 1: Automatically create a new AzureML workspace and resource group:
+
+```
 bash scripts/setup.sh
 ```
+
+### Option 2: Integrate Pachyderm with an existing AzureML workspace:
+
+Set the resource_group_name variable to an existing Azure resource group.
+If you're attaching AzureML-Pachyderm to an existing AzureML workspace, you must specify the same resource group that the target AzureML workspace is in here:
+
+```
+export TF_VAR_existing_resource_group_name="existing-resource-group"
+export TF_VAR_existing_workspace_name="existing-workspace"
+bash scripts/setup.sh
+```
+
+You can also create a new AzureML workspace in an existing resource group by only specifying `TF_VAR_existing_resource_group_name` but not `TF_VAR_existing_workspace_name`.
 
 
 ## Step 2 - Update rslex on your AML Compute
