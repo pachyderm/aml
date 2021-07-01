@@ -29,6 +29,8 @@ export TF_VAR_prefix=foo # short descriptive name for your deployment
 export TF_VAR_location="East US"
 ```
 
+Now we'll deploy the syncer VM and the AKS cluster and start Pachyderm on it.
+
 ### Option 1: Automatically create a new AzureML workspace and resource group:
 
 ```
@@ -37,7 +39,7 @@ bash scripts/setup.sh
 
 ### Option 2: Integrate Pachyderm with an existing AzureML workspace:
 
-If you're attaching AzureML-Pachyderm to an existing AzureML workspace, you must specify the same resource group that the target AzureML workspace is in here, as well as specifying the workspace name:
+If you're attaching AzureML-Pachyderm to an existing AzureML workspace, specify the resource group that the target AzureML workspace is in here, as well as specifying the workspace name:
 
 ```
 export TF_VAR_existing_resource_group_name="existing-resource-group"
