@@ -2,9 +2,13 @@
 
 **Please note: This repo should only be used by Pachyderm-approved private preview users. Please contact [joey@pachyderm.io](mailto:joey@pachyderm.io) to become a private preview user. This is a preview, do not use it for production!**
 
-How to set up AML with Pachyderm:
+## Architecture
+
+![Pachyderm and Azure Machine Learning architecture diagram](pachyderm-aml.png)
 
 ## Requirements
+
+How to set up AML with Pachyderm:
 
 * You need to be running Linux/MacOS/WSL on your local machine
 * Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
