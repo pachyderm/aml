@@ -12,7 +12,7 @@ How to set up AML with Pachyderm:
 
 * You need to be running Linux/MacOS/WSL on your local machine
 * Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-* Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+* Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 1.0+
 
 ## Step 1 - Deploy stack
 
@@ -31,13 +31,12 @@ Log into Azure:
 az login
 ```
 
-Set up Terraform environment variables:
+Choose where you want to deploy Pachyderm and the syncer:
 ```
-export TF_VAR_prefix="foo" # short descriptive name for your deployment
 export TF_VAR_location="East US"
 ```
 
-If you're deploying with an existing AzureML workspace, the location above must match.
+If you're deploying with an existing AzureML workspace, the location above should match where your workspace is.
 
 Now we'll deploy the syncer VM and the AKS cluster and start Pachyderm on it.
 
