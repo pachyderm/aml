@@ -72,7 +72,11 @@ From an AML notebook (create a new file in the "Notebooks" tab), connect to the 
 
 Now proceed with the demo...
 
-## Demo
+## Demo video
+
+TODO: insert link to youtube video here
+
+## Tutorial
 
 ```
 instance_ip="$(cd terraform; terraform output -raw instance_ip)"
