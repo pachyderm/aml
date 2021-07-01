@@ -20,6 +20,8 @@ pip3 install \
 pip3 install \
   python-pachyderm==6.1.0
 
+# Install dev build of azureml-dataprep which supports custom datastores
+
 # These two are compatible versions
 pip3 install --extra-index-url=https://dataprepdownloads.azureedge.net/pypi/test-M3ME5B1GMEM3SW0W/38723857/ \
   azureml-dataprep==2.18.0.dev0+98293a5
@@ -32,13 +34,13 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 # Set up pachyderm on AKS cluster
 
-curl -o /tmp/pachctl.deb -L https://github.com/pachyderm/pachyderm/releases/download/v1.13.1/pachctl_1.13.1_amd64.deb \
+curl -o /tmp/pachctl.deb -L https://github.com/pachyderm/pachyderm/releases/download/v1.13.3/pachctl_1.13.3_amd64.deb \
     && sudo dpkg -i /tmp/pachctl.deb
 
-#pachctl deploy microsoft <container> <account-name> <account-key> <disk-size> 
+#pachctl deploy microsoft <container> <account-name> <account-key> <disk-size>
 pachctl deploy microsoft --dry-run --dynamic-etcd-nodes 1 \
     $AZURE_STORAGE_CONTAINER $AZURE_STORAGE_ACCOUNT_NAME $AZURE_STORAGE_ACCOUNT_KEY 50 > pachyderm.yaml
-sed -i "s/:1.13.1/:1.13.2-caa0df0c871d9af6c9c87c3ee55684d2f4cd34ad/g" pachyderm.yaml
+#sed -i "s/:1.13.1/:1.13.2-caa0df0c871d9af6c9c87c3ee55684d2f4cd34ad/g" pachyderm.yaml
 kubectl apply -f pachyderm.yaml
 
 until timeout 1s bash $SCRIPT_DIR/check_ready.sh app=pachd; do sleep 1; done
