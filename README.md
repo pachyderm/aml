@@ -2,6 +2,8 @@
 
 **Please note: This repo code should only be used by Pachyderm-approved private preview users. Please contact [joey@pachyderm.io](mailto:joey@pachyderm.io) to become a private preview user.**
 
+**This is a preview, do not use it for production!**
+
 How to set up AML with Pachyderm:
 
 ## Step 1 - Deploy stack
