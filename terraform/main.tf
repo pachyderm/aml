@@ -27,24 +27,30 @@ resource "azurerm_resource_group" "main" {
   location = var.location
 }
 
-data "azurerm_resource_group" "main" {
+data "azurerm_resource_group" "existing" {
   count = var.existing_resource_group_name == "" ? 0 : 1
   name = var.existing_resource_group_name
 }
+
+locals {
+  resource_group_name = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].name : data.azurerm_resource_group.existing[0].name
+  resource_group_location = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].location : data.azurerm_resource_group.existing[0].location
+}
+
 
 # Create a virtual network within the resource group
 
 resource "azurerm_virtual_network" "main" {
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.main[0].location
-  resource_group_name = azurerm_resource_group.main[0].name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 }
 
 # subnet for the vm
 resource "azurerm_subnet" "internal" {
   name                 = "internal"
-  resource_group_name  = azurerm_resource_group.main[0].name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.2.0/24"]
 }
@@ -52,7 +58,7 @@ resource "azurerm_subnet" "internal" {
 # subnet for the aks cluster and aml to share
 #resource "azurerm_subnet" "internal2" {
 #  name                 = "internal2"
-#  resource_group_name  = azurerm_resource_group.main[0].name
+#  resource_group_name  = local.resource_group_name
 #  virtual_network_name = azurerm_virtual_network.main.name
 #  address_prefixes     = ["10.0.2.0/24"]
 #}
@@ -60,7 +66,7 @@ resource "azurerm_subnet" "internal" {
 # Role assignment from VM -> AML
 
 resource "azurerm_role_assignment" "example" {
-  scope                = azurerm_machine_learning_workspace.example[0].id
+  scope                = local.machine_learning_workspace_id
   role_definition_name = "Contributor"
   principal_id         = azurerm_linux_virtual_machine.syncer.identity[0].principal_id
 }
