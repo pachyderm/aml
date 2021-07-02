@@ -12,20 +12,20 @@ source $SCRIPT_DIR/env.sh
 sudo apt update
 sudo apt install -y python3-pip
 
-pip3 install --upgrade pip
+sudo pip3 install --upgrade pip
 
-pip3 install \
+sudo pip3 install \
   setuptools-rust==0.12.1
 
-pip3 install \
+sudo pip3 install \
   python-pachyderm==6.1.0
 
 # Install dev build of azureml-dataprep which supports custom datastores
 
 # These two are compatible versions
-pip3 install --extra-index-url=https://dataprepdownloads.azureedge.net/pypi/test-M3ME5B1GMEM3SW0W/38723857/ \
+sudo pip3 install --extra-index-url=https://dataprepdownloads.azureedge.net/pypi/test-M3ME5B1GMEM3SW0W/38723857/ \
   azureml-dataprep==2.18.0.dev0+98293a5
-pip3 install azureml-core==1.29.0.post1
+sudo pip3 install azureml-core==1.29.0.post1
 
 # Install kubectl, setup.sh has already put .kube/config in place
 
