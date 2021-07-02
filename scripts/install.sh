@@ -67,7 +67,7 @@ fi
 #echo "Starting syncer"
 #python3 syncer/sync.py
 
-cat << EOF | sudo tee -a /etc/systemd/system/pachyderm-aml-syncer.service
+cat << EOF | sudo tee /etc/systemd/system/pachyderm-aml-syncer.service
 [Unit]
 Description=Pachyderm AzureML Syncer
 [Service]
