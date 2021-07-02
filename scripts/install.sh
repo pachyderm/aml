@@ -12,20 +12,20 @@ source $SCRIPT_DIR/env.sh
 sudo apt update
 sudo apt install -y python3-pip
 
-sudo pip3 install --upgrade pip
+pip3 install --upgrade pip
 
-sudo pip3 install \
+pip3 install \
   setuptools-rust==0.12.1
 
-sudo pip3 install \
+pip3 install \
   python-pachyderm==6.1.0
 
 # Install dev build of azureml-dataprep which supports custom datastores
 
 # These two are compatible versions
-sudo pip3 install --extra-index-url=https://dataprepdownloads.azureedge.net/pypi/test-M3ME5B1GMEM3SW0W/38723857/ \
+pip3 install --extra-index-url=https://dataprepdownloads.azureedge.net/pypi/test-M3ME5B1GMEM3SW0W/38723857/ \
   azureml-dataprep==2.18.0.dev0+98293a5
-sudo pip3 install azureml-core==1.29.0.post1
+pip3 install azureml-core==1.29.0.post1
 
 # Install kubectl, setup.sh has already put .kube/config in place
 
@@ -71,7 +71,7 @@ cat << EOF | sudo tee /etc/systemd/system/pachyderm-aml-syncer.service
 [Unit]
 Description=Pachyderm AzureML Syncer
 [Service]
-User=root
+User=ubuntu
 WorkingDirectory=/home/ubuntu
 ExecStart=/bin/bash -c "source /home/ubuntu/scripts/env.sh; /usr/bin/python3 /home/ubuntu/syncer/sync.py"
 Environment=PYTHONUNBUFFERED=1
