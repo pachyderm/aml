@@ -47,33 +47,27 @@ until timeout 1s bash $SCRIPT_DIR/check_ready.sh app=pachd; do sleep 1; done
 
 kubectl get all
 
-pkill -f 'port-forward' || true
-
-# give pachd a chance to bind its ports
-# TODO: less hacky way to do this?
-echo "Waiting for 30 seconds for pachd to bind its ports before proceeding..."
-sleep 30
-
-kubectl port-forward service/pachd 30650:650 &
-pid=$!
-
-echo "Waiting for 15 seconds for port forwarding to start working before proceeding..."
-sleep 15
-if [ ! -e /proc/$pid/cmdline ]; then
-    echo "Port-forward exited, oh no"
-    exit 1
-fi
-
-#echo "Starting syncer"
-#python3 syncer/sync.py
-
 cat << EOF | sudo tee /etc/systemd/system/pachyderm-aml-syncer.service
 [Unit]
 Description=Pachyderm AzureML Syncer
 [Service]
 User=ubuntu
 WorkingDirectory=/home/ubuntu
-ExecStart=/bin/bash -c "source /home/ubuntu/scripts/env.sh; /usr/bin/python3 /home/ubuntu/syncer/sync.py"
+ExecStart=/bin/bash -c " \
+    pkill -f 'port-forward' || true; \
+    echo "Waiting for 30 seconds for pachd to bind its ports before proceeding..."; \
+    sleep 30; \
+    kubectl port-forward service/pachd 30650:650 & \
+    pid=\$!; \
+    echo "Waiting for 15 seconds for port forwarding to start working before proceeding..."; \
+    sleep 15; \
+    if [ ! -e /proc/\$pid/cmdline ]; then; \
+        echo "Port-forward exited, oh no"; \
+        exit 1; \
+    fi; \
+    source /home/ubuntu/scripts/env.sh; \
+    /usr/bin/python3 /home/ubuntu/syncer/sync.py \
+"
 Environment=PYTHONUNBUFFERED=1
 Restart=always
 [Install]

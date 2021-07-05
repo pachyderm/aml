@@ -9,7 +9,7 @@ if [ -z "${SKIP_TERRAFORM:-}" ]; then
 fi
 
 instance_ip="$(terraform output -raw instance_ip)"
-trap "echo To debug failures, run: ssh ubuntu@$instance_ip" EXIT
+trap "echo To debug failures, run: ssh ubuntu@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer" EXIT
 
 terraform output -raw kube_config > kubeconfig
 
@@ -19,3 +19,4 @@ ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$insta
 scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(realpath $(pwd))/terraform/kubeconfig \
     ubuntu@$instance_ip:.kube/config
 ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- bash scripts/install.sh
+ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer
