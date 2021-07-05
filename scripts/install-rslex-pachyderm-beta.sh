@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export PY36_VERSION=507d32b
-export PY38_VERSION=507d32b
+export PY36_VERSION=53f6828
+export PY38_VERSION=53f6828
 
 echo "Installing kubectl"
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
