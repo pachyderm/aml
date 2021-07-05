@@ -1,11 +1,7 @@
 #!/bin/bash
 
-export PY36_VERSION=507d32b
-export PY38_VERSION=507d32b
-
-echo "Installing kubectl"
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+export PY36_VERSION=53f6828
+export PY38_VERSION=53f6828
 
 echo "Installing Microsoft's dev version of dataprep for py36"
 /anaconda/envs/azureml_py36/bin/pip install --force-reinstall --extra-index-url https://dataprepdownloads.azureedge.net/pypi/test-M3ME5B1GMEM3SW0W/38723857/ azureml-dataprep==2.18.0.dev0+98293a5
