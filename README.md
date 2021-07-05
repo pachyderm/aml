@@ -77,6 +77,8 @@ TODO: insert link to youtube video here
 
 ## Tutorial
 
+From the directory where you ran `setup.sh`, run:
+
 ```
 instance_ip="$(cd terraform; terraform output -raw instance_ip)"
 ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- '
@@ -89,7 +91,9 @@ ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$insta
 '
 ```
 
-Then click Consume and copy and paste the result into an AML notebook.
+Then, go to the Datasets page in AML and observe that pachyderm commits are automatically populated in AML as Dataset versions!
+
+For a specific dataset version, click Consume and copy and paste the code into an AML notebook. Run it, and note that the data is visible.
 
 Then, run:
 ```
