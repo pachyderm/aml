@@ -83,6 +83,8 @@ TODO: insert link to youtube video here
 
 ## Tutorial
 
+This tutorial uses structured JSON data, which requires running with `TF_VAR_pachyderm_syncer_mode="jsonl"`.
+
 From the directory where you ran `setup.sh`, run:
 
 ```
@@ -117,6 +119,8 @@ ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$insta
 Now re-run the Consume code and show that it's updated, but then as the a-ha moment go back to the previous version and add `version="1"` to the Python code and show that you see the old version of the data - a-ha! Data versioning & reproducibility!
 
 ## Advanced: using pachctl locally
+
+This tutorial uses image data, which requires running with `TF_VAR_pachyderm_syncer_mode="files"`.
 
 * Install [pachctl](https://docs.pachyderm.com/latest/getting_started/local_installation/#install-pachctl)
 
