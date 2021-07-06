@@ -43,7 +43,7 @@ Now we'll deploy the syncer VM and the AKS cluster and start Pachyderm on it.
 Optionally, specify whether you want the syncer to create File datasets (`files`, matches all files, for unstructured data) or Tabular datasets with json lines format (`jsonl`, matches `**/*.jsonl` and aggregates into a single table - in which case all json lines files in a given Pachyderm repo must have compatible schemas):
 
 ```
-export TF_VAR_pachyderm_syncer_mode="files"
+export TF_VAR_pachyderm_syncer_mode="files" # or "jsonl"
 ```
 
 ### Option 1: Automatically create a new AzureML workspace and resource group:
