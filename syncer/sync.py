@@ -24,8 +24,10 @@ pc = pach.Client(host=os.environ['PACHD_SERVICE_HOST'],
                  port=os.environ['PACHD_SERVICE_PORT'])
 print("Done!")
 
-#mode = "files"
-mode = "jsonl"
+# Specify "files" to create File datasets (matches all files in the Pachyderm
+# repo), or "jsonl" for Tabular json lines format (matches **/*.jsonl in the
+# Pachyderm repo).
+mode = os.getenv("PACHYDERM_SYNCER_MODE", "jsonl")
 
 #1. Get all the repos
 #2. For each repo, get all the commits
@@ -89,7 +91,7 @@ def update_repos():
             ds_new = Dataset.File.from_files(
               # Don't bother checking if files are available at the endpoint
               validate=False,
-              path=[(datastore, f"{commit}.master.{repo}")]) # TODO: test adding /**/*.csv and such to path string
+              path=[(datastore, f"{commit}.master.{repo}")])
             ds_new = ds_new.register(workspace=w,
                                      name=f"Pachyderm repo {repo}",
                                      description=f"Contents of Pachyderm repo {repo} at commit {commit}",

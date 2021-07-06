@@ -88,6 +88,8 @@ export AZURE_STORAGE_ACCOUNT_KEY="${azurerm_storage_account.pachyderm.primary_ac
 export PACHD_SERVICE_HOST="localhost"
 export PACHD_SERVICE_PORT="30650"
 
+export PACHYDERM_SYNCER_MODE="${var.pachyderm_syncer_mode}"
+
 EOT
 }
 
