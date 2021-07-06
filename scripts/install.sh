@@ -55,14 +55,14 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu
 ExecStart=/bin/bash -c " \
     pkill -f 'port-forward' || true; \
-    echo "Waiting for 30 seconds for pachd to bind its ports before proceeding..."; \
+    echo \"Waiting for 30 seconds for pachd to bind its ports before proceeding...\"; \
     sleep 30; \
     kubectl port-forward service/pachd 30650:650 & \
     pid=\$!; \
-    echo "Waiting for 15 seconds for port forwarding to start working before proceeding..."; \
+    echo \"Waiting for 15 seconds for port forwarding to start working before proceeding...\"; \
     sleep 15; \
     if [ ! -e /proc/\$pid/cmdline ]; then; \
-        echo "Port-forward exited, oh no"; \
+        echo \"Port-forward exited, oh no\"; \
         exit 1; \
     fi; \
     source /home/ubuntu/scripts/env.sh; \
