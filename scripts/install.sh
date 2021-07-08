@@ -38,7 +38,8 @@ curl -o /tmp/pachctl.deb -L https://github.com/pachyderm/pachyderm/releases/down
     && sudo dpkg -i /tmp/pachctl.deb
 
 #pachctl deploy microsoft <container> <account-name> <account-key> <disk-size>
-pachctl deploy microsoft --dry-run --dynamic-etcd-nodes 1 \
+# we need no-expose-docker-socket because we are also getting https://github.com/pachyderm/pachyderm/issues/4760
+pachctl deploy microsoft --no-expose-docker-socket --dry-run --dynamic-etcd-nodes 1 \
     $AZURE_STORAGE_CONTAINER $AZURE_STORAGE_ACCOUNT_NAME $AZURE_STORAGE_ACCOUNT_KEY 50 > pachyderm.yaml
 #sed -i "s/:1.13.1/:1.13.2-caa0df0c871d9af6c9c87c3ee55684d2f4cd34ad/g" pachyderm.yaml
 kubectl apply -f pachyderm.yaml
@@ -67,3 +68,4 @@ EOF
 
 sudo systemctl daemon-reload
 sudo systemctl start pachyderm-aml-syncer
+

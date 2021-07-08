@@ -46,7 +46,7 @@ def update_repos():
   global w
   global commit_to_dataset
 
-  DATASTORE_NAME = 'pachyderm_datastore_2'
+  DATASTORE_NAME = 'pachyderm_datastore'
   # Does datastore exist?
   if not DATASTORE_NAME in w.datastores:
       print(f"Creating datastore {DATASTORE_NAME}")
@@ -56,14 +56,7 @@ def update_repos():
                 "dataStoreType": "Custom",
                 "customSection": {
                     "datastoreType": "Pachyderm",
-                    "credential": json.dumps({
-                             "type": "servicePrincipal",
-                             "resourceUrl": "https://pachyderm.io",
-                             "authorityUrl": "https://pachyderm.io",
-                             "tenantId": "1",
-                             "clientId": "1",
-                             "clientSecret": auth,
-                        }),
+                    "credential": auth,
                     "properties": {
                         "pachd_service_host": os.environ['PACHD_SERVICE_HOST'],
                         "pachd_service_port": os.environ['PACHD_SERVICE_PORT']}}},
