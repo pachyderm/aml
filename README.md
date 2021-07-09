@@ -77,10 +77,6 @@ From an AML notebook (create a new file in the "Notebooks" tab), connect to the 
 
 Now proceed with the demo...
 
-## Demo video
-
-TODO: insert link to youtube video here
-
 ## Tutorial
 
 This tutorial uses structured JSON data, which requires running with `TF_VAR_pachyderm_syncer_mode="jsonl"`.
