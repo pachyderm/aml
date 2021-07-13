@@ -52,6 +52,8 @@ export TF_VAR_pachyderm_syncer_mode="files" # or "jsonl"
 bash scripts/setup.sh
 ```
 
+If you get errors about exceeding quota, try a different region (`TF_VAR_location`).
+
 ### Option 2: Integrate Pachyderm with an existing AzureML workspace:
 
 If you're attaching AzureML-Pachyderm to an existing AzureML workspace, specify the resource group that the target AzureML workspace is in here, as well as specifying the workspace name:
