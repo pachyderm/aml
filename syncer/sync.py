@@ -28,7 +28,10 @@ print("Done!")
 # Specify "files" to create File datasets (matches all files in the Pachyderm
 # repo), or "jsonl" for Tabular json lines format (matches **/*.jsonl in the
 # Pachyderm repo).
+MODES = {"files", "jsonl", "delimited"}
 mode = os.getenv("PACHYDERM_SYNCER_MODE", "jsonl")
+if mode not in MODES:
+    raise ValueError(f"mode must be one of {MODES}")
 
 # 1. Get all the repos
 # 2. For each repo, get all the commits
@@ -37,6 +40,17 @@ mode = os.getenv("PACHYDERM_SYNCER_MODE", "jsonl")
 
 # TODO: don't create a new version for every existing version every startup
 # (parse list of existing, filter them out)
+
+
+def register_new_dataset_version(ds, mode, repo, commit):
+    ds.register(
+        workspace=w,
+        name=f"Pachyderm repo {repo} - {mode}",
+        description=f"Content ({mode}) from Pachyderm repo {repo} at commit {commit}",
+        create_new_version=True,
+    )
+    commit_to_dataset[repo][commit] = ds.id
+    print(ds.add_tags({"pachyderm-repo": repo, "pachyderm-commit": commit}))
 
 
 def update_repos():
@@ -76,7 +90,7 @@ def update_repos():
     repos = [ri.repo.name for ri in pc.list_repo()]
     for repo in repos:
         print(f"Visiting {repo}")
-        for ci in reversed(list(pc.list_commit(repo))):
+        for ci in list(pc.list_commit(repo, reverse=True)):
             if repo not in commit_to_dataset:
                 print(f"Propagating commits for repo {repo}")
                 commit_to_dataset[repo] = {}
@@ -92,13 +106,7 @@ def update_repos():
                         validate=False,
                         path=[(datastore, f"{commit}.master.{repo}")],
                     )
-                    ds_new = ds_new.register(
-                        workspace=w,
-                        name=f"Pachyderm repo {repo}",
-                        description=f"Contents of Pachyderm repo {repo} at commit {commit}",
-                        create_new_version=True,
-                    )
-                    commit_to_dataset[repo][commit] = ds_new.id
+                    register_new_dataset_version(ds_new, mode, repo, commit)
 
                 elif mode == "jsonl":
                     ds_new = Dataset.Tabular.from_json_lines_files(
@@ -106,17 +114,17 @@ def update_repos():
                         validate=False,
                         path=[(datastore, f"{commit}.master.{repo}/**/*.jsonl")],
                     )
-                    ds_new = ds_new.register(
-                        workspace=w,
-                        name=f"Pachyderm repo {repo} - jsonl view",
-                        description=f"JSON lines view of Pachyderm repo {repo} at commit {commit}",
-                        create_new_version=True,
-                    )
-                    commit_to_dataset[repo][commit] = ds_new.id
+                    register_new_dataset_version(ds_new, mode, repo, commit)
 
-                # Have to do this _after_ registering it. It returns an Exception, but
-                # doesn't raise it (!)
-                print(ds_new.add_tags({"pachyderm-repo": repo, "pachyderm-commit": commit}))
+                elif mode == "delimited":
+                    ds_new = Dataset.Tabular.from_delimited_files(
+                        validate=False,
+                        # TODO support TSV as well
+                        path=[(datastore, f"{commit}.master.{repo}/**/*.csv")],
+                    )
+                    register_new_dataset_version(ds_new, mode, repo, commit)
+                else:
+                    raise ValueError(f"{mode} is not recognized as a valid mode, try one of {MODES}")
 
 
 def loop_update_repos():
