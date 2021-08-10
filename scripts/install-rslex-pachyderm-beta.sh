@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export PY36_VERSION=8dc4df5
-export PY38_VERSION=8dc4df5
+export PY36_VERSION=edcd9cb
+export PY38_VERSION=edcd9cb
 export PY36_BIN=/anaconda/envs/azureml_py36/bin
 export PY38_BIN=/anaconda/envs/azureml_py38/bin
 
