@@ -1,19 +1,14 @@
-import os, time
+import base64
+import os
+import time
 
 import python_pachyderm as pach
-
-import json
-from azureml.core import Workspace, Dataset, Datastore, Experiment
-from azureml.core.authentication import MsiAuthentication
-import base64
 import requests
-
-# Track Pachyderm commits that have been propagated
-# repo -> commit -> (dataset, version)
-commit_to_dataset = {}
+from azureml.core import Dataset, Datastore, Workspace
+from azureml.core.authentication import MsiAuthentication
 
 print("Connecting to AML workspace")
-w = Workspace(
+WORKSPACE = Workspace(
     subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"],
     resource_group=os.environ["AZURE_RESOURCE_GROUP"],
     workspace_name=os.environ["AZURE_ML_WORKSPACE_NAME"],
@@ -22,35 +17,48 @@ w = Workspace(
 print("Done!")
 
 print("Connecting to Pachyderm")
-pc = pach.Client(host=os.environ["PACHD_SERVICE_HOST"], port=os.environ["PACHD_SERVICE_PORT"])
+PC = pach.Client(
+    host=os.environ["PACHD_SERVICE_HOST"], port=os.environ["PACHD_SERVICE_PORT"]
+)
 print("Done!")
 
 # Specify "files" to create File datasets (matches all files in the Pachyderm
 # repo), or "jsonl" for Tabular json lines format (matches **/*.jsonl in the
 # Pachyderm repo).
 MODES = {"files", "jsonl", "delimited"}
-mode = os.getenv("PACHYDERM_SYNCER_MODE", "jsonl")
-if mode not in MODES:
+MODE = os.getenv("PACHYDERM_SYNCER_MODE", "jsonl")
+if MODE not in MODES:
     raise ValueError(f"mode must be one of {MODES}")
 
 # 1. Get all the repos
 # 2. For each repo, get all the commits
 # 3. For each (repo, commit) see if there's a (dataset, version) that points to it
 # 4. If not, create the new (dataset, version)
-
-# TODO: don't create a new version for every existing version every startup
-# (parse list of existing, filter them out)
+# Track Pachyderm commits that have been propagated
+existing_commits = set()
 
 
 def register_new_dataset_version(ds, mode, repo, commit):
     ds.register(
-        workspace=w,
+        workspace=WORKSPACE,
         name=f"Pachyderm repo {repo} - {mode}",
         description=f"Content ({mode}) from Pachyderm repo {repo} at commit {commit}",
         create_new_version=True,
+        tags={"pachyderm-repo": repo, "pachyderm-commit": commit},
     )
-    commit_to_dataset[repo][commit] = ds.id
-    print(ds.add_tags({"pachyderm-repo": repo, "pachyderm-commit": commit}))
+    existing_commits.add(commit)
+
+
+def get_existing_dataset_commits():
+    # get all registered Datasets, returns a dictionary of datasets keyed by their registration name
+    datasets = Dataset.get_all(WORKSPACE)
+    for dataset_name, dataset in datasets.items():
+        latest_version = dataset.version
+
+        for version in range(1, latest_version + 1):
+            dataset = Dataset.get_by_name(WORKSPACE, dataset_name, version)
+            commit = dataset.tags["pachyderm-commit"]
+            existing_commits.add(commit)
 
 
 def update_repos():
@@ -58,16 +66,12 @@ def update_repos():
     kubeconfig = open(".kube/config").read().encode("utf-8")
     auth = base64.b64encode(kubeconfig).decode("utf-8")
 
-    global pc
-    global w
-    global commit_to_dataset
-
     DATASTORE_NAME = "pachyderm_datastore"
     # Does datastore exist?
-    if not DATASTORE_NAME in w.datastores:
+    if DATASTORE_NAME not in WORKSPACE.datastores:
         print(f"Creating datastore {DATASTORE_NAME}")
         resp = requests.post(
-            f"https://ml.azure.com/api/{w.location}/datastore/v1.0/subscriptions/{w.subscription_id}/resourceGroups/{w.resource_group}/providers/Microsoft.MachineLearningServices/workspaces/{w.name}/datastores?createIfNotExists=false&skipValidation=true",
+            f"https://ml.azure.com/api/{WORKSPACE.location}/datastore/v1.0/subscriptions/{WORKSPACE.subscription_id}/resourceGroups/{WORKSPACE.resource_group}/providers/Microsoft.MachineLearningServices/workspaces/{WORKSPACE.name}/datastores?createIfNotExists=false&skipValidation=true",
             json={
                 "name": DATASTORE_NAME,
                 "dataStoreType": "Custom",
@@ -84,47 +88,45 @@ def update_repos():
         )
         print(f"response from creating datastore: {resp} {resp.content}")
 
-    datastore = Datastore.get(workspace=w, datastore_name=DATASTORE_NAME)
+    datastore = Datastore.get(workspace=WORKSPACE, datastore_name=DATASTORE_NAME)
 
     print("Reading repos from pachyderm")
-    repos = [ri.repo.name for ri in pc.list_repo()]
+    repos = [ri.repo.name for ri in PC.list_repo()]
     for repo in repos:
         print(f"Visiting {repo}")
-        for ci in list(pc.list_commit(repo, reverse=True)):
-            if repo not in commit_to_dataset:
-                print(f"Propagating commits for repo {repo}")
-                commit_to_dataset[repo] = {}
-
+        for ci in list(PC.list_commit(repo, reverse=True)):
             commit = ci.commit.id
-            if commit not in commit_to_dataset[repo]:
+            if commit not in existing_commits:
                 print(f"Propagating commit {repo}@{commit} | {ci}")
 
                 # TODO: rather than switching between modes, consider propagating various views.
-                if mode == "files":
-                    ds_new = Dataset.File.from_files(
+                if MODE == "files":
+                    ds = Dataset.File.from_files(
                         # Don't bother checking if files are available at the endpoint
                         validate=False,
                         path=[(datastore, f"{commit}.master.{repo}")],
                     )
-                    register_new_dataset_version(ds_new, mode, repo, commit)
+                    register_new_dataset_version(ds, MODE, repo, commit)
 
-                elif mode == "jsonl":
-                    ds_new = Dataset.Tabular.from_json_lines_files(
+                elif MODE == "jsonl":
+                    ds = Dataset.Tabular.from_json_lines_files(
                         # Don't bother checking if files are available at the endpoint
                         validate=False,
                         path=[(datastore, f"{commit}.master.{repo}/**/*.jsonl")],
                     )
-                    register_new_dataset_version(ds_new, mode, repo, commit)
+                    register_new_dataset_version(ds, MODE, repo, commit)
 
-                elif mode == "delimited":
-                    ds_new = Dataset.Tabular.from_delimited_files(
+                elif MODE == "delimited":
+                    ds = Dataset.Tabular.from_delimited_files(
                         validate=False,
                         # TODO support TSV as well
                         path=[(datastore, f"{commit}.master.{repo}/**/*.csv")],
                     )
-                    register_new_dataset_version(ds_new, mode, repo, commit)
+                    register_new_dataset_version(ds, MODE, repo, commit)
                 else:
-                    raise ValueError(f"{mode} is not recognized as a valid mode, try one of {MODES}")
+                    raise ValueError(
+                        f"{MODE} is not recognized as a valid mode, try one of {MODES}"
+                    )
 
 
 def loop_update_repos():
@@ -134,4 +136,6 @@ def loop_update_repos():
 
 
 if __name__ == "__main__":
+    get_existing_dataset_commits()
+    print("existing commits", existing_commits)
     loop_update_repos()
