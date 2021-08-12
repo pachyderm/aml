@@ -28,3 +28,7 @@ output "kube_config" {
   sensitive = true
   value     = azurerm_kubernetes_cluster.example.kube_config_raw
 }
+output "kube_context" {
+  sensitive = false
+  value     = azurerm_kubernetes_cluster.example.name
+}
