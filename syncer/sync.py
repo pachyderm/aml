@@ -112,15 +112,16 @@ def update_repos():
                     ds = Dataset.Tabular.from_json_lines_files(
                         # Don't bother checking if files are available at the endpoint
                         validate=False,
-                        path=[(datastore, f"{commit}.master.{repo}/**/*.jsonl")],
+                        path=[(datastore, f"{commit}.master.{repo}/**.jsonl")],
                     )
                     register_new_dataset_version(ds, MODE, repo, commit)
 
                 elif MODE == "delimited":
                     ds = Dataset.Tabular.from_delimited_files(
                         validate=False,
+                        infer_column_types=False,
                         # TODO support TSV as well
-                        path=[(datastore, f"{commit}.master.{repo}/**/*.csv")],
+                        path=[(datastore, f"{commit}.master.{repo}/**.csv")],
                     )
                     register_new_dataset_version(ds, MODE, repo, commit)
                 else:
