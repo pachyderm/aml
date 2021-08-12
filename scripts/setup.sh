@@ -14,9 +14,8 @@ trap "echo To debug failures, run: ssh ubuntu@$instance_ip -- journalctl -n 100 
 terraform output -raw kube_config > kubeconfig
 
 cd ..
-scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(realpath $(pwd))/{syncer,scripts} ubuntu@$instance_ip:
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(pwd)/{syncer,scripts} ubuntu@$instance_ip:
 ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- mkdir -p .kube
-scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(realpath $(pwd))/terraform/kubeconfig \
-    ubuntu@$instance_ip:.kube/config
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(pwd)/terraform/kubeconfig ubuntu@$instance_ip:.kube/config
 ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- bash scripts/install.sh
 ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer
