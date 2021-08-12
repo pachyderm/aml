@@ -44,10 +44,10 @@ If you're deploying with an existing AzureML workspace, the location above shoul
 
 Now we'll deploy the syncer VM and the AKS cluster and start Pachyderm on it.
 
-Optionally, specify whether you want the syncer to create File datasets (`files`, matches all files, for unstructured data) or Tabular datasets with json lines format (`jsonl`, matches `**/*.jsonl` and aggregates into a single table - in which case all json lines files in a given Pachyderm repo must have compatible schemas):
+Optionally, specify whether you want the syncer to create File datasets (`files`, matches all files, for unstructured data) or Tabular datasets with json lines format (`jsonl`, matches `*.jsonl` and aggregates into a single table - in which case all json lines files in a given Pachyderm repo must have compatible schemas), or Tabular datasets with csv format (`delmited`, matches `*.csv` and aggregates into a single table - in which case all csv files in a given Pachyderm repo must have compatible schemas):
 
 ```
-export TF_VAR_pachyderm_syncer_mode="files" # or "jsonl"
+export TF_VAR_pachyderm_syncer_mode="files" # or "jsonl" or "delimited"
 ```
 
 ### Option 1: Automatically create a new AzureML workspace and resource group:
@@ -81,7 +81,7 @@ From an AML notebook (create a new file in the "Notebooks" tab), connect to the 
 !curl -sSL https://raw.githubusercontent.com/pachyderm/aml/main/scripts/install-rslex-pachyderm-beta.sh | sh
 ```
 
-Now proceed with the demo...
+Now proceed with the demo or try some of the examples in the `examples/` folder:
 
 ## Tutorial
 
@@ -131,6 +131,7 @@ From your `aml` repo, run:
 ```
 (cd terraform; terraform output -raw kube_config) > kubeconfig
 export KUBECONFIG=$(pwd)/kubeconfig
+pachctl config set context -k $(terraform output -raw kube_context) aml --overwrite && pachctl config set active-context aml
 pachctl version
 ```
 
