@@ -50,6 +50,11 @@ Optionally, specify whether you want the syncer to create File datasets (`files`
 export TF_VAR_pachyderm_syncer_mode="files" # or "jsonl"
 ```
 
+If you are deploying on a mac, make sure you have coreutils. if you dont, you can install using brew:
+```
+brew install coreutils
+```
+
 ### Option 1: Automatically create a new AzureML workspace and resource group:
 
 ```
