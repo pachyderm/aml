@@ -187,5 +187,8 @@ def create_learning_curve(estimator, features, targets):
                         ylim=(0.5, 1.01), cv=cv, n_jobs=4)
 
 
-
+def set_dtypes(data):
+    for key in data:
+        data[key] = data[key].astype(float)
+    return data
 
