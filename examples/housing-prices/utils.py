@@ -73,13 +73,13 @@ def plot_learning_curve(estimator, title, X, y, axes=None, ylim=None, cv=None,
         (default: np.linspace(0.1, 1.0, 5))
     """
     if axes is None:
-        _, axes = plt.subplots(1, 3, figsize=(20, 5))
+        _, axes = plt.subplots(1, 1, figsize=(5, 5))
 
-    axes[0].set_title(title)
+    axes.set_title(title)
     if ylim is not None:
-        axes[0].set_ylim(*ylim)
-    axes[0].set_xlabel("Training examples")
-    axes[0].set_ylabel("Score")
+        axes.set_ylim(*ylim)
+    axes.set_xlabel("Training examples")
+    axes.set_ylabel("Score")
 
     train_sizes, train_scores, test_scores, fit_times, _ = \
         learning_curve(estimator, X, y, cv=cv, n_jobs=n_jobs,
@@ -93,39 +93,21 @@ def plot_learning_curve(estimator, title, X, y, axes=None, ylim=None, cv=None,
     fit_times_std = np.std(fit_times, axis=1)
 
     # Plot learning curve
-    axes[0].grid()
-    axes[0].fill_between(train_sizes, train_scores_mean - train_scores_std,
+    axes.grid()
+    axes.fill_between(train_sizes, train_scores_mean - train_scores_std,
                          train_scores_mean + train_scores_std, alpha=0.1,
                          color="r")
-    axes[0].fill_between(train_sizes, test_scores_mean - test_scores_std,
+    axes.fill_between(train_sizes, test_scores_mean - test_scores_std,
                          test_scores_mean + test_scores_std, alpha=0.1,
                          color="g")
-    axes[0].plot(train_sizes, train_scores_mean, 'o-', color="r",
+    axes.plot(train_sizes, train_scores_mean, 'o-', color="r",
                  label="Training score")
-    axes[0].plot(train_sizes, test_scores_mean, 'o-', color="g",
+    axes.plot(train_sizes, test_scores_mean, 'o-', color="g",
                  label="Cross-validation score")
-    axes[0].legend(loc="best")
+    axes.legend(loc="best")
 
-    # Plot n_samples vs fit_times
-    axes[1].grid()
-    axes[1].plot(train_sizes, fit_times_mean, 'o-')
-    axes[1].fill_between(train_sizes, fit_times_mean - fit_times_std,
-                         fit_times_mean + fit_times_std, alpha=0.1)
-    axes[1].set_xlabel("Training examples")
-    axes[1].set_ylabel("fit_times")
-    axes[1].set_title("Scalability of the model")
-
-    # Plot fit_time vs score
-    axes[2].grid()
-    axes[2].plot(fit_times_mean, test_scores_mean, 'o-')
-    axes[2].fill_between(fit_times_mean, test_scores_mean - test_scores_std,
-                         test_scores_mean + test_scores_std, alpha=0.1)
-    axes[2].set_xlabel("fit_times")
-    axes[2].set_ylabel("Score")
-    axes[2].set_title("Performance of the model")
 
     return plt
-
 
 
 def create_pairplot(data):
