@@ -78,8 +78,14 @@ Note: this step will no longer be necessary after Microsoft release a new versio
 From an AML notebook (create a new file in the "Notebooks" tab), connect to the compute instance you want to use with Pachyderm (creating one through the UI if necessary), and run:
 
 ```
-!curl -sSL https://raw.githubusercontent.com/pachyderm/aml/main/scripts/install-rslex-pachyderm-beta.sh | sh
+!curl -sSL https://raw.githubusercontent.com/pachyderm/aml/main/scripts/install-dataprep-rslex-dev.sh | sh
 ```
+
+*Restart the Python Kernel for your notebook after the installation completes,
+for the changes to take effect.*
+
+*Note*: there might be some errors related to incompatible package versions, you can
+simply ignore those.
 
 Now proceed with the demo or try some of the examples in the `examples/` folder:
 
