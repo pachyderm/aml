@@ -1,0 +1,36 @@
+{
+    "pipeline": {
+        "name": "your azure storage container name"
+    },
+    "transform": {
+        "image": "albertpachyderm/azcopy",
+        "cmd": [
+            "sh"
+        ],
+        "stdin": [
+            "azcopy copy \"https://${AZURE_STORAGE_ACCOUNT}.${AZURE_STORAGE_TYPE}.core.windows.net/${AZURE_STORAGE_CONTAINER}/*?${AZURE_STORAGE_SAS_TOKEN}\" /pfs/out --recursive"
+        ],
+        "env": {
+            "AZURE_STORAGE_TYPE": "dfs",
+            "AZURE_STORAGE_ACCOUNT": "your azure storage account name",
+            "AZURE_STORAGE_CONTAINER": "your azure storage container name"
+        },
+        "secrets": [
+            {
+                "name": "container_name_secret",
+                "env_var": "AZURE_STORAGE_SAS_TOKEN",
+                "key": "azure_storage_sas_token"
+            }
+        ]
+    },
+    "parallelism_spec": {
+        "constant": 1
+    },
+    "input": {
+        "cron": {
+            "name": "tick",
+            "spec": "@every 60s",
+            "overwrite": true
+        }
+    }
+}

@@ -154,3 +154,7 @@ pachctl put file images@master:kitten.png -f http://imgur.com/g2QnNqa.png
 And you'll see they automatically show up as dataset versions in AML (if you are running with `pachyderm_syncer_mode` set to `files`).
 
 You may need to click the refresh button in the AML file browser UI to see the downloaded files.
+
+## Examples
+
+[Migrate data from Blob/ADLS Gen2 to Pachyderm](examples/azure_storage/README.md)
