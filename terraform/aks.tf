@@ -1,4 +1,5 @@
 resource "azurerm_kubernetes_cluster" "example" {
+  count               = var.existing_pachyderm_cluster_name == "" ? 1 : 0
   name                = "pachyderm-${random_id.deployment.hex}"
   location            = local.resource_group_location
   resource_group_name = local.resource_group_name
