@@ -74,22 +74,31 @@ resource "azurerm_role_assignment" "example" {
 resource "local_file" "env" {
   filename = "${path.module}/../scripts/env.sh"
   content = <<EOT
-
-# azureml instance
+# env variables for syncer
 export AZURE_SUBSCRIPTION_ID="${data.azurerm_client_config.current.subscription_id}"
 export AZURE_RESOURCE_GROUP="${local.resource_group_name}"
 export AZURE_ML_WORKSPACE_NAME="${local.machine_learning_workspace_name}"
-
-# storage for pachyderm
-export AZURE_STORAGE_CONTAINER="${azurerm_storage_container.pachyderm.name}"
-export AZURE_STORAGE_ACCOUNT_NAME="${azurerm_storage_account.pachyderm.name}"
-export AZURE_STORAGE_ACCOUNT_KEY="${azurerm_storage_account.pachyderm.primary_access_key}"
 
 export PACHD_SERVICE_HOST="localhost"
 export PACHD_SERVICE_PORT="30650"
 
 export PACHYDERM_SYNCER_MODE="${var.pachyderm_syncer_mode}"
+EOT
+}
 
+resource "local_file" "helmvalues" {
+  filename = "${path.module}/../scripts/helmvalues.yaml"
+  content = <<EOT
+deployTarget: MICROSOFT
+
+pachd:
+  storage:
+    microsoft:
+      container: "${azurerm_storage_container.pachyderm.name}"
+      id: "${azurerm_storage_account.pachyderm.name}"
+      secret: "${azurerm_storage_account.pachyderm.primary_access_key}"
+etcd:
+  storageClass: "default"
 EOT
 }
 

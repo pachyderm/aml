@@ -3,7 +3,7 @@ set -xeuo pipefail
 
 # To be run by systemd
 pkill -9 -f 'kubectl port-forward' || true
-kubectl port-forward service/pachd 30650:650 &
+kubectl port-forward service/pachd 30650:30650 &
 pid=$!
 echo "Waiting for 15 seconds for port forwarding to start working before proceeding..."
 sleep 15

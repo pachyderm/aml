@@ -9,5 +9,5 @@
 *.tfstate.*
 
 scripts/env.sh
+scripts/helmvalues.yaml
 kubeconfig
-
