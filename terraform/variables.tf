@@ -21,4 +21,8 @@ variable "pachyderm_syncer_mode" {
   default     = "files"
 }
 
-variable "existing_pachyderm_cluster_name" {}
+variable "existing_pachyderm_cluster_name" {
+  description = "Name of existing Pachyderm cluster"
+  type        = string
+  default     = ""
+}

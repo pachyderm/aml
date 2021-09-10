@@ -22,14 +22,15 @@ resource "azurerm_kubernetes_cluster" "example" {
 }
 
 output "client_certificate" {
-  value = azurerm_kubernetes_cluster.example.kube_config.0.client_certificate
+  value = var.existing_pachyderm_cluster_name == "" ? azurerm_kubernetes_cluster.example[0].kube_config.0.client_certificate : ""
 }
 
 output "kube_config" {
   sensitive = true
-  value     = azurerm_kubernetes_cluster.example.kube_config_raw
+  value     = var.existing_pachyderm_cluster_name == "" ? azurerm_kubernetes_cluster.example[0].kube_config_raw : ""
 }
+
 output "kube_context" {
   sensitive = false
-  value     = azurerm_kubernetes_cluster.example.name
-}
+  value     = var.existing_pachyderm_cluster_name == "" ? azurerm_kubernetes_cluster.example[0].name : ""
+} 

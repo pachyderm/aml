@@ -53,7 +53,7 @@ resource "azurerm_network_interface_security_group_association" "main" {
 }
 
 resource "azurerm_linux_virtual_machine" "syncer" {
-  name                            = "vm-${random_id.deployment.hex}"
+  name                            = "vm-syncer-${random_id.deployment.hex}"
   resource_group_name             = local.resource_group_name
   location                        = local.resource_group_location
   size                            = "Standard_D3_v2"
