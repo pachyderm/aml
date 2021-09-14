@@ -22,18 +22,18 @@ data "azurerm_client_config" "current" {}
 # Create or lookup a resource group
 
 resource "azurerm_resource_group" "main" {
-  count = var.existing_resource_group_name == "" ? 1 : 0
+  count    = var.existing_resource_group_name == "" ? 1 : 0
   name     = "resources-${random_id.deployment.hex}"
   location = var.location
 }
 
 data "azurerm_resource_group" "existing" {
   count = var.existing_resource_group_name == "" ? 0 : 1
-  name = var.existing_resource_group_name
+  name  = var.existing_resource_group_name
 }
 
 locals {
-  resource_group_name = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].name : data.azurerm_resource_group.existing[0].name
+  resource_group_name     = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].name : data.azurerm_resource_group.existing[0].name
   resource_group_location = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].location : data.azurerm_resource_group.existing[0].location
 }
 
@@ -73,7 +73,7 @@ resource "azurerm_role_assignment" "example" {
 
 resource "local_file" "env" {
   filename = "${path.module}/../scripts/env.sh"
-  content = <<EOT
+  content  = <<EOT
 # env variables for syncer
 export AZURE_SUBSCRIPTION_ID="${data.azurerm_client_config.current.subscription_id}"
 export AZURE_RESOURCE_GROUP="${local.resource_group_name}"
@@ -88,7 +88,7 @@ EOT
 
 resource "local_file" "helmvalues" {
   filename = "${path.module}/../scripts/helmvalues.yaml"
-  content = <<EOT
+  content  = <<EOT
 deployTarget: MICROSOFT
 
 pachd:
