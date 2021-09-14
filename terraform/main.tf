@@ -22,18 +22,18 @@ data "azurerm_client_config" "current" {}
 # Create or lookup a resource group
 
 resource "azurerm_resource_group" "main" {
-  count = var.existing_resource_group_name == "" ? 1 : 0
+  count    = var.existing_resource_group_name == "" ? 1 : 0
   name     = "resources-${random_id.deployment.hex}"
   location = var.location
 }
 
 data "azurerm_resource_group" "existing" {
   count = var.existing_resource_group_name == "" ? 0 : 1
-  name = var.existing_resource_group_name
+  name  = var.existing_resource_group_name
 }
 
 locals {
-  resource_group_name = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].name : data.azurerm_resource_group.existing[0].name
+  resource_group_name     = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].name : data.azurerm_resource_group.existing[0].name
   resource_group_location = var.existing_resource_group_name == "" ? azurerm_resource_group.main[0].location : data.azurerm_resource_group.existing[0].location
 }
 
@@ -73,23 +73,32 @@ resource "azurerm_role_assignment" "example" {
 
 resource "local_file" "env" {
   filename = "${path.module}/../scripts/env.sh"
-  content = <<EOT
-
-# azureml instance
+  content  = <<EOT
+# env variables for syncer
 export AZURE_SUBSCRIPTION_ID="${data.azurerm_client_config.current.subscription_id}"
 export AZURE_RESOURCE_GROUP="${local.resource_group_name}"
 export AZURE_ML_WORKSPACE_NAME="${local.machine_learning_workspace_name}"
-
-# storage for pachyderm
-export AZURE_STORAGE_CONTAINER="${azurerm_storage_container.pachyderm.name}"
-export AZURE_STORAGE_ACCOUNT_NAME="${azurerm_storage_account.pachyderm.name}"
-export AZURE_STORAGE_ACCOUNT_KEY="${azurerm_storage_account.pachyderm.primary_access_key}"
 
 export PACHD_SERVICE_HOST="localhost"
 export PACHD_SERVICE_PORT="30650"
 
 export PACHYDERM_SYNCER_MODE="${var.pachyderm_syncer_mode}"
+EOT
+}
 
+resource "local_file" "helmvalues" {
+  filename = "${path.module}/../scripts/helmvalues.yaml"
+  content  = <<EOT
+deployTarget: MICROSOFT
+
+pachd:
+  storage:
+    microsoft:
+      container: "${azurerm_storage_container.pachyderm.name}"
+      id: "${azurerm_storage_account.pachyderm.name}"
+      secret: "${azurerm_storage_account.pachyderm.primary_access_key}"
+etcd:
+  storageClass: "default"
 EOT
 }
 

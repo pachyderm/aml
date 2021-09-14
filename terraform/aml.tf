@@ -1,5 +1,5 @@
 resource "azurerm_application_insights" "example" {
-  count = var.existing_workspace_name == "" ? 1 : 0
+  count               = var.existing_workspace_name == "" ? 1 : 0
   name                = "insights-${random_id.deployment.hex}"
   location            = local.resource_group_location
   resource_group_name = local.resource_group_name
@@ -7,7 +7,7 @@ resource "azurerm_application_insights" "example" {
 }
 
 resource "azurerm_key_vault" "example" {
-  count = var.existing_workspace_name == "" ? 1 : 0
+  count                    = var.existing_workspace_name == "" ? 1 : 0
   name                     = "vault-${random_id.deployment.hex}"
   location                 = local.resource_group_location
   resource_group_name      = local.resource_group_name
@@ -17,7 +17,7 @@ resource "azurerm_key_vault" "example" {
 }
 
 resource "azurerm_storage_account" "example" {
-  count = var.existing_workspace_name == "" ? 1 : 0
+  count                    = var.existing_workspace_name == "" ? 1 : 0
   name                     = "storageaml${random_id.deployment.hex}"
   location                 = local.resource_group_location
   resource_group_name      = local.resource_group_name
@@ -26,7 +26,7 @@ resource "azurerm_storage_account" "example" {
 }
 
 resource "azurerm_machine_learning_workspace" "example" {
-  count = var.existing_workspace_name == "" ? 1 : 0
+  count                   = var.existing_workspace_name == "" ? 1 : 0
   name                    = "workspace-${random_id.deployment.hex}"
   location                = local.resource_group_location
   resource_group_name     = local.resource_group_name
@@ -40,12 +40,12 @@ resource "azurerm_machine_learning_workspace" "example" {
 }
 
 data "azurerm_machine_learning_workspace" "existing" {
-  count = var.existing_workspace_name == "" ? 0 : 1
+  count               = var.existing_workspace_name == "" ? 0 : 1
   name                = var.existing_workspace_name
   resource_group_name = local.resource_group_name
 }
 
 locals {
-  machine_learning_workspace_id = var.existing_workspace_name == "" ? azurerm_machine_learning_workspace.example[0].id : data.azurerm_machine_learning_workspace.existing[0].id
+  machine_learning_workspace_id   = var.existing_workspace_name == "" ? azurerm_machine_learning_workspace.example[0].id : data.azurerm_machine_learning_workspace.existing[0].id
   machine_learning_workspace_name = var.existing_workspace_name == "" ? azurerm_machine_learning_workspace.example[0].name : var.existing_workspace_name
 }

@@ -19,9 +19,9 @@ resource "azurerm_network_interface" "main" {
 }
 
 resource "azurerm_network_interface" "internal" {
-  name                      = "nic2-${random_id.deployment.hex}"
-  resource_group_name       = local.resource_group_name
-  location                  = local.resource_group_location
+  name                = "nic2-${random_id.deployment.hex}"
+  resource_group_name = local.resource_group_name
+  location            = local.resource_group_location
 
   ip_configuration {
     name                          = "internal"
@@ -58,7 +58,7 @@ resource "azurerm_linux_virtual_machine" "syncer" {
   location                        = local.resource_group_location
   size                            = "Standard_D3_v2"
   disable_password_authentication = true
-  admin_username      = "ubuntu"
+  admin_username                  = "ubuntu"
   network_interface_ids = [
     azurerm_network_interface.main.id,
     azurerm_network_interface.internal.id,
