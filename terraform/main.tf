@@ -83,6 +83,7 @@ export PACHD_SERVICE_HOST="localhost"
 export PACHD_SERVICE_PORT="30650"
 
 export PACHYDERM_SYNCER_MODE="${var.pachyderm_syncer_mode}"
+export SKIP_PACHYDERM_DEPLOY="${var.skip_pachyderm_deploy}"
 EOT
 }
 
