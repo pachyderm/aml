@@ -52,13 +52,22 @@ resource "azurerm_network_interface_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.ssh.id
 }
 
+data "azurerm_resource_group" "image" {
+  name = var.syncer_image_resource_group
+}
+
+data "azurerm_image" "image" {
+  name                = var.syncer_image_name
+  resource_group_name = data.azurerm_resource_group.image.name
+}
+
 resource "azurerm_linux_virtual_machine" "syncer" {
-  name                            = "vm-${random_id.deployment.hex}"
+  name                            = "syncer-${random_id.deployment.hex}"
   resource_group_name             = local.resource_group_name
   location                        = local.resource_group_location
   size                            = "Standard_D3_v2"
   disable_password_authentication = true
-  admin_username                  = "ubuntu"
+  admin_username                  = "terraform"
   network_interface_ids = [
     azurerm_network_interface.main.id,
     azurerm_network_interface.internal.id,
@@ -70,16 +79,11 @@ resource "azurerm_linux_virtual_machine" "syncer" {
   }
 
   admin_ssh_key {
-    username   = "ubuntu"
+    username   = "terraform"
     public_key = file("~/.ssh/id_rsa.pub")
   }
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
-  }
+  source_image_id = data.azurerm_image.image.id
 
   os_disk {
     storage_account_type = "Standard_LRS"

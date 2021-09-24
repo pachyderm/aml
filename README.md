@@ -11,8 +11,8 @@
 How to set up AML with Pachyderm:
 
 * You need to be running Linux/MacOS/WSL on your local machine
-* Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-* Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 1.0+
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 1.0+
 
 ## Step 0 - Enable custom datastores on your Azure subscription ID
 
