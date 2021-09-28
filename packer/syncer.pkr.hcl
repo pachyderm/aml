@@ -1,4 +1,4 @@
-// TODO shared image gallery
+// Syncer VM image
 
 variable "subscription_id" {
   type = string
@@ -6,27 +6,27 @@ variable "subscription_id" {
 
 variable "sig_resource_group" {
   type    = string
-  default = "resources-aml"
+  default = "packer"
 }
 
 variable "sig_name" {
   type    = string
-  default = "aml_sig"
+  default = "gallery"
 }
 
 variable "sig_image_name" {
   type    = string
-  default = "aml_syncer_image_definition"
+  default = "aml_pachyderm"
 }
 
 variable "sig_image_version" {
   type    = string
-  default = "1.0.0"
+  default = "0.0.1"
 }
 
 variable "sig_replication_regions" {
   type    = list(string)
-  default = ["East US", "UK South", "Canada Central"]
+  default = ["Canada Central", "East US", "UK South", "West Europe"]
 }
 
 source "azure-arm" "ubuntu" {
@@ -44,12 +44,12 @@ source "azure-arm" "ubuntu" {
   managed_image_name                = "syncer-image"
   managed_image_resource_group_name = "${var.sig_resource_group}" // TODO should this be the same RG as SIG?
 
-  location        = "East US"
-  vm_size         = "Standard_DS2_v2"
+  location        = "UK South"
+  vm_size         = "Standard_D2s_v3"
   os_type         = "Linux"
   image_publisher = "Canonical"
-  image_offer     = "UbuntuServer"
-  image_sku       = "18.04-LTS"
+  image_offer     = "0001-com-ubuntu-server-focal"
+  image_sku       = "20_04-lts-gen2"
 
   azure_tags = {
     dept = "Engineering"
@@ -66,6 +66,7 @@ build {
   }
 
   provisioner "shell" {
+    execute_command =  "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'"
     script = "setup.sh"
   }
 

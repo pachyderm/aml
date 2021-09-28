@@ -4,12 +4,18 @@ PACHD_VERSION='2.0.0-rc.1'
 
 # Install dependencies
 
+# pip
+sudo apt-get update && apt-get upgrade -y
+sudo apt-get -y install python3-pip
+python3 -m pip --version
+
 ## helm
-curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
-sudo apt-get install apt-transport-https --yes
-echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-sudo apt-get update
-sudo apt-get install -y python3-pip helm
+curl -LO https://get.helm.sh/helm-v3.7.0-linux-amd64.tar.gz
+tar -zxvf helm-v3.7.0-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+rm -rf linux-amd64 helm-v3.7.0-linux-amd64.tar.gz
+helm version
+
 ## kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl

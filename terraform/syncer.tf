@@ -65,7 +65,7 @@ resource "azurerm_linux_virtual_machine" "syncer" {
   name                            = "syncer-${random_id.deployment.hex}"
   resource_group_name             = local.resource_group_name
   location                        = local.resource_group_location
-  size                            = "Standard_D3_v2"
+  size                            = "Standard_D2s_v3"
   disable_password_authentication = true
   admin_username                  = "terraform"
   network_interface_ids = [
@@ -83,7 +83,7 @@ resource "azurerm_linux_virtual_machine" "syncer" {
     public_key = file("~/.ssh/id_rsa.pub")
   }
 
-  source_image_id = data.azurerm_image.image.id
+  source_image_id = "/subscriptions/04701c5f-d635-4103-a3a9-0d74aa3ddc51/resourceGroups/packer/providers/Microsoft.Compute/galleries/gallery/images/aml_pachyderm/versions/0.0.1"
 
   os_disk {
     storage_account_type = "Standard_LRS"
