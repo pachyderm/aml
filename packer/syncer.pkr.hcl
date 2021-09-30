@@ -21,7 +21,7 @@ variable "sig_image_name" {
 
 variable "sig_image_version" {
   type    = string
-  default = "0.0.1"
+  default = "0.0.3"
 }
 
 variable "sig_replication_regions" {
@@ -66,7 +66,7 @@ build {
   }
 
   provisioner "shell" {
-    execute_command =  "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'"
+    execute_command =  "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh -x '{{ .Path }}'"
     script = "setup.sh"
   }
 

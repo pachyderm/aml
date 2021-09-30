@@ -9,15 +9,15 @@ if [ -z "${SKIP_TERRAFORM:-}" ]; then
 fi
 
 instance_ip="$(terraform output -raw instance_ip)"
-trap "echo To debug failures, run: ssh terraform@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer" EXIT
+trap "echo To debug failures, run: ssh pachyderm@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer" EXIT
 
 terraform output -raw kube_config > kubeconfig
 
 cd ..
 # copy over env variables and kubeconfig
-scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(pwd)/terraform/kubeconfig terraform@$instance_ip:/home/terraform/.kube/config
-scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(pwd)/scripts/{env.sh,helmvalues.yaml} terraform@$instance_ip:/home/terraform
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(pwd)/terraform/kubeconfig pachyderm@$instance_ip:/home/pachyderm/.kube/config
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $(pwd)/scripts/{env.sh,helmvalues.yaml} pachyderm@$instance_ip:/home/pachyderm
 
 # deploy pachyderm and run syncer
-ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null terraform@$instance_ip -- bash scripts/deploy_pachyderm.sh
-ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null terraform@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer
+ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null pachyderm@$instance_ip -- bash scripts/deploy_pachyderm.sh
+ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null pachyderm@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer
