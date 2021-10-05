@@ -11,7 +11,7 @@ fi
 instance_ip="$(terraform output -raw instance_ip)"
 trap "echo To debug failures, run: ssh pachyderm@$instance_ip -- journalctl -n 100 -f -u pachyderm-aml-syncer" EXIT
 
-terraform output -raw kube_config > kubeconfig
+[[ -z "${TF_VAR_skip_pachyderm_deploy}" ]] && terraform output -raw kube_config > kubeconfig
 
 cd ..
 # copy over env variables and kubeconfig

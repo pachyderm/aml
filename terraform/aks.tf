@@ -1,4 +1,5 @@
 resource "azurerm_kubernetes_cluster" "example" {
+  count               = var.skip_pachyderm_deploy == "" ? 1 : 0
   name                = "pachyderm-${random_id.deployment.hex}"
   location            = local.resource_group_location
   resource_group_name = local.resource_group_name
@@ -21,14 +22,14 @@ resource "azurerm_kubernetes_cluster" "example" {
 }
 
 output "client_certificate" {
-  value = azurerm_kubernetes_cluster.example.kube_config.0.client_certificate
+  value = var.skip_pachyderm_deploy == "" ? azurerm_kubernetes_cluster.example[0].kube_config.0.client_certificate : ""
 }
 
 output "kube_config" {
   sensitive = true
-  value     = azurerm_kubernetes_cluster.example.kube_config_raw
+  value     = var.skip_pachyderm_deploy == "" ? azurerm_kubernetes_cluster.example[0].kube_config_raw : ""
 }
 output "kube_context" {
   sensitive = false
-  value     = azurerm_kubernetes_cluster.example.name
+  value     = var.skip_pachyderm_deploy == "" ? azurerm_kubernetes_cluster.example[0].name : ""
 }

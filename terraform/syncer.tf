@@ -76,14 +76,14 @@ resource "azurerm_linux_virtual_machine" "syncer" {
 
   source_image_reference {
     publisher = "pachyderminc1585170006545"
-    offer = "pachyderm_aml_enablement"
-    sku = "base-aml-pachyderm-plan"
-    version = "0.0.3"
+    offer     = "pachyderm_aml_enablement"
+    sku       = "base-aml-pachyderm-plan"
+    version   = "0.0.3"
   }
-  
+
   plan {
-    name = "base-aml-pachyderm-plan"
-    product = "pachyderm_aml_enablement"
+    name      = "base-aml-pachyderm-plan"
+    product   = "pachyderm_aml_enablement"
     publisher = "pachyderminc1585170006545"
   }
 
