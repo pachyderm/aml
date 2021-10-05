@@ -11,5 +11,5 @@ if [ ! -e /proc/$pid/cmdline ]; then
     echo "Port-forward exited, oh no"
     exit 1
 fi
-source /home/terraform/env.sh
-python3 /home/terraform/syncer/sync.py
+source /home/pachyderm/env.sh
+python3 /home/pachyderm/syncer/sync.py

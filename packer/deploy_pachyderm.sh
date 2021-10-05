@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-source /home/terraform/env.sh
+source /home/pachyderm/env.sh
 
 PACHD_VERSION='2.0.0-rc.1'
 

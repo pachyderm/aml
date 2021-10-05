@@ -52,22 +52,13 @@ resource "azurerm_network_interface_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.ssh.id
 }
 
-data "azurerm_resource_group" "image" {
-  name = var.syncer_image_resource_group
-}
-
-data "azurerm_image" "image" {
-  name                = var.syncer_image_name
-  resource_group_name = data.azurerm_resource_group.image.name
-}
-
 resource "azurerm_linux_virtual_machine" "syncer" {
   name                            = "syncer-${random_id.deployment.hex}"
   resource_group_name             = local.resource_group_name
   location                        = local.resource_group_location
-  size                            = "Standard_D3_v2"
+  size                            = "Standard_D2s_v3"
   disable_password_authentication = true
-  admin_username                  = "terraform"
+  admin_username                  = "pachyderm"
   network_interface_ids = [
     azurerm_network_interface.main.id,
     azurerm_network_interface.internal.id,
@@ -79,11 +70,22 @@ resource "azurerm_linux_virtual_machine" "syncer" {
   }
 
   admin_ssh_key {
-    username   = "terraform"
+    username   = "pachyderm"
     public_key = file("~/.ssh/id_rsa.pub")
   }
 
-  source_image_id = data.azurerm_image.image.id
+  source_image_reference {
+    publisher = "pachyderminc1585170006545"
+    offer = "pachyderm_aml_enablement"
+    sku = "base-aml-pachyderm-plan"
+    version = "0.0.3"
+  }
+  
+  plan {
+    name = "base-aml-pachyderm-plan"
+    product = "pachyderm_aml_enablement"
+    publisher = "pachyderminc1585170006545"
+  }
 
   os_disk {
     storage_account_type = "Standard_LRS"
