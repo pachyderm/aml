@@ -11,7 +11,9 @@
 *.tfstate
 *.tfstate.*
 
-scripts/env.sh
-scripts/helmvalues.yaml
+# custom stuff
 kubeconfig
+env.sh
+helmvalues.yaml
+terraform/out
 

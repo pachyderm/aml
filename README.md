@@ -70,6 +70,31 @@ bash scripts/setup.sh
 
 (You can also create a new AzureML workspace in an existing resource group by only specifying `TF_VAR_existing_resource_group_name` but not `TF_VAR_existing_workspace_name`.)
 
+### Option 3: Only create a new Syncer VM, and integrate exiting Azure ML workspace with existing Pachyderm cluster
+
+We will only create a new VM for the Syncer, and adopt existing Pachyderm and AML infrastructure. You will need to copy the Terraform code to a fresh new directory.
+
+```
+mkdir syncer1  # recommend naming this as syncer-$workspace_name
+cp terraform/*.tf syncer1
+cp -R terraform/out/ syncer1/out  # copy kubeconfig, env.sh and helmvalues, which setup.sh depends on
+```
+
+Setup appropriate environment variables.
+
+```
+export TERRAFORM_WD=syncer1
+export TF_VAR_skip_pachyderm_deploy=1
+export TF_VAR_existing_resource_group_name="existing-resource-group"
+export TF_VAR_existing_workspace_name="existing-workspace"
+```
+
+Run
+
+```
+bash scripts/setup.sh
+```
+
 
 ## Step 2 - Update rslex on your AML Compute
 
