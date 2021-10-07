@@ -98,8 +98,6 @@ pachd:
       container: "${azurerm_storage_container.pachyderm.name}"
       id: "${azurerm_storage_account.pachyderm.name}"
       secret: "${azurerm_storage_account.pachyderm.primary_access_key}"
-etcd:
-  storageClass: "default"
 EOT
 }
 
