@@ -1,14 +1,14 @@
 #!/bin/bash
 set -xeuo pipefail
 
+# Directory containing terraform scripts
+[[ -z ${TERRAFORM_WD:-} ]] && TERRAFORM_WD=$(pwd)/terraform
+
 # kubeconfig must already exist if user wants to skip deploying Pachyderm
 if [[ ! -z "${TF_VAR_skip_pachyderm_deploy:+x}" ]] && [[ ! -f "$TERRAFORM_WD/out/kubeconfig" ]]; then
   echo "\"$TERRAFORM_WD/out/kubeconfig\" does not exist, but Pachyderm deployment is skipped; exiting" >/dev/stderr
   exit 1
 fi
-
-# Directory containing terraform scripts
-[[ -z $TERRAFORM_WD:- ]] && TERRAFORM_WD=$(pwd)/terraform
 
 pushd $TERRAFORM_WD
 # For fast manual iteration on the scripts, set SKIP_TERRAFORM=1 after the first run
