@@ -162,7 +162,7 @@ From your `aml` repo, run:
 ```
 (cd terraform; terraform output -raw kube_config) > kubeconfig
 export KUBECONFIG=$(pwd)/kubeconfig
-pachctl config set context -k $(cd terraform; terraform output -raw kube_context) aml --overwrite && pachctl config set active-context aml
+pachctl config import-kube aml -k $(cd terraform; terraform output -raw kube_context) --overwrite && pachctl config set active-context aml
 pachctl version
 ```
 
