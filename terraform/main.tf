@@ -72,7 +72,7 @@ resource "azurerm_role_assignment" "example" {
 }
 
 resource "local_file" "env" {
-  filename = "${path.module}/../scripts/env.sh"
+  filename = "${path.module}/out/env.sh"
   content  = <<EOT
 # env variables for syncer
 export AZURE_SUBSCRIPTION_ID="${data.azurerm_client_config.current.subscription_id}"
@@ -88,7 +88,7 @@ EOT
 }
 
 resource "local_file" "helmvalues" {
-  filename = "${path.module}/../scripts/helmvalues.yaml"
+  filename = "${path.module}/out/helmvalues.yaml"
   content  = <<EOT
 deployTarget: MICROSOFT
 
