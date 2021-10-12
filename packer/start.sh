@@ -12,4 +12,5 @@ if [ ! -e /proc/$pid/cmdline ]; then
     exit 1
 fi
 source /home/pachyderm/env.sh
+# TODO check if all required env variables are bound
 python3 /home/pachyderm/syncer/sync.py

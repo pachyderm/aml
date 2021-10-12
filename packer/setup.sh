@@ -64,7 +64,10 @@ WorkingDirectory=/home/pachyderm
 ExecStart=/home/pachyderm/scripts/start.sh
 Environment=PYTHONUNBUFFERED=1
 Restart=always
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
+sudo systemctl enable pachyderm-aml-syncer.service
