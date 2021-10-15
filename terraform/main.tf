@@ -81,6 +81,7 @@ export AZURE_ML_WORKSPACE_NAME="${local.machine_learning_workspace_name}"
 
 export PACHD_SERVICE_HOST="localhost"
 export PACHD_SERVICE_PORT="30650"
+export PACHD_S3G_PORT="30600"
 
 export PACHYDERM_SYNCER_MODE="${var.pachyderm_syncer_mode}"
 export SKIP_PACHYDERM_DEPLOY="${var.skip_pachyderm_deploy}"
