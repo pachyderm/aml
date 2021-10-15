@@ -3,9 +3,10 @@
 PACHD_VERSION='2.0.0-rc.1'
 
 # Install dependencies
+sudo apt-get update && apt-get upgrade -y
+sudo apt-get install -y apt-transport-https
 
 # pip
-sudo apt-get update && apt-get upgrade -y
 sudo apt-get -y install python3-pip
 python3 -m pip --version
 
@@ -21,6 +22,14 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 ## pachctl
 curl -o /tmp/pachctl.deb -L https://github.com/pachyderm/pachyderm/releases/download/v${PACHD_VERSION}/pachctl_${PACHD_VERSION}_amd64.deb && sudo dpkg -i /tmp/pachctl.deb
+
+## dotnet runtime 2.1
+wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+rm packages-microsoft-prod.deb
+
+sudo apt-get update; \
+  sudo apt-get install -y dotnet-runtime-2.1
 
 # Setup sudo to allow no-password sudo for "pachyderm" user
 sudo groupadd -r hashicorp
@@ -64,7 +73,10 @@ WorkingDirectory=/home/pachyderm
 ExecStart=/home/pachyderm/scripts/start.sh
 Environment=PYTHONUNBUFFERED=1
 Restart=always
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
+sudo systemctl enable pachyderm-aml-syncer.service

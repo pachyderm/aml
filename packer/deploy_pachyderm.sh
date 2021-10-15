@@ -13,7 +13,3 @@ fi
 
 echo "Wait for pachd to finish deploying with timeout=3m"
 kubectl wait --for=condition=ready --timeout=3m pod -l app=pachd
-
-# Use systemd to run syncer
-sudo systemctl daemon-reload
-sudo systemctl start pachyderm-aml-syncer
