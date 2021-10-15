@@ -21,7 +21,7 @@ variable "sig_image_name" {
 
 variable "sig_image_version" {
   type    = string
-  default = "0.0.3"
+  default = "0.0.5"
 }
 
 variable "sig_replication_regions" {
