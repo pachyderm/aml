@@ -57,8 +57,9 @@ def get_existing_dataset_commits():
 
         for version in range(1, latest_version + 1):
             dataset = Dataset.get_by_name(WORKSPACE, dataset_name, version)
-            commit = dataset.tags["pachyderm-commit"]
-            existing_commits.add(commit)
+            commit = dataset.tags.get("pachyderm-commit", None)
+            if commit is not None:
+                existing_commits.add(commit)
 
 
 def update_repos():
