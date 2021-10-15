@@ -79,8 +79,9 @@ def update_repos():
                     "datastoreType": "Pachyderm",
                     "credential": auth,
                     "properties": {
-                        "pachd_service_host": os.environ["PACHD_SERVICE_HOST"],
-                        "pachd_service_port": os.environ["PACHD_SERVICE_PORT"],
+                        "pachd_service_host": os.environ.get("PACHD_SERVICE_HOST", "localhost"),
+                        "pachd_service_port": os.environ.get("PACHD_SERVICE_PORT", 30650),
+                        "pachd_s3g_port": os.environ.get("PACHD_S3G_PORT", 30600),
                     },
                 },
             },
