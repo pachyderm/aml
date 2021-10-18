@@ -78,7 +78,7 @@ resource "azurerm_linux_virtual_machine" "syncer" {
     publisher = "pachyderminc1585170006545"
     offer     = "pachyderm_aml_enablement-preview" // TODO remove -preview
     sku       = "base-aml-pachyderm-plan"
-    version   = "0.0.5"
+    version   = "0.0.6"
   }
 
   plan {
