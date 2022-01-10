@@ -151,11 +151,11 @@ ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$insta
 
 Now re-run the Consume code and show that it's updated, but then as the a-ha moment go back to the previous version and add `version="1"` to the Python code and show that you see the old version of the data - a-ha! Data versioning & reproducibility!
 
-## Advanced: using pachctl locally
-
-This tutorial uses image data, which requires running with `TF_VAR_pachyderm_syncer_mode="files"`.
+## Advanced: connect to Pachyderm via local `pachctl`
 
 * Install [pachctl](https://docs.pachyderm.com/latest/getting_started/local_installation/#install-pachctl)
+
+We need to get the kubeconfig from Terraform so that we can authenticate against the remote K8s cluster.
 
 From your `aml` repo, run:
 
@@ -167,18 +167,7 @@ pachctl version
 ```
 
 You should see that your local `pachctl` is able to connect to your Pachyderm cluster.
-You can now insert data like this:
-
-```
-pachctl create repo images
-pachctl put file images@master:liberty.png -f http://imgur.com/46Q8nDz.png
-pachctl put file images@master:AT-AT.png -f http://imgur.com/8MN9Kg0.png
-pachctl put file images@master:kitten.png -f http://imgur.com/g2QnNqa.png
-```
-
-And you'll see they automatically show up as dataset versions in AML (if you are running with `pachyderm_syncer_mode` set to `files`).
-
-You may need to click the refresh button in the AML file browser UI to see the downloaded files.
+You can now insert data as described in the [tutorial](#tutorial).
 
 ## Examples
 
