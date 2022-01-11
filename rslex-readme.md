@@ -2,11 +2,26 @@
 
 [GitHub Repo](https://github.com/Azure/rslex)
 
-`rslex` is the client library to interface with Azure ML Datasets.
+`rslex` is a low level released as part of `azureml-dataprep-rslex`, which is used by the higher level `azureml-dataprep` libraries.
 
-At a high level, the user will use rslex to request data from Datasets, which are path references to Datastores. rslex takes those paths and queries the underlying datastore, which is a Pachyderm cluster. You can imagine these Datasets as S3 glob patterns for specific repo+commit combos, for example `[commit].[branch].[repo]/**.jsonl` 
+At a high level, the code path looks something like:
 
-# Development environment
+1. [Python] user creates a lazy `Dataset` based on some name or path referencing some data in Pachyderm.
+1. [Python] user calls some function to "download Dataset"
+1. [Python] the Dataset API forwards the request to rslex
+1. [Rust] the request looks something like `{data_store_type: "pachyderm", path: "commit.branch.repo/**.jsonl"}`
+1. [Rust] rslex forwards the request to our custom handler
+1. [Rust] handler makes an HTTP request to Pachyderm via S3G
+1. [Rust] returns file content back to the user
+
+For reference:
+
+- [`Dataset`](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.core.dataset(class)?view=azure-ml-py)
+- [`Datastore`](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.core.datastore.datastore?view=azure-ml-py)
+- [Dataset tutorial](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-create-register-datasets)
+
+
+# Development environment in AML VM
 
 The repo details how to get a local dev environment setup. However, because we are building an integration with Azure ML itself, we need to test whether our stuff actually works with the Azure ML environment. To test this, we need to create a real Azure ML workspace, and a VM computer instance as our development computer.
 
@@ -29,10 +44,31 @@ The repo details how to get a local dev environment setup. However, because we a
         ```
         rustup component add rust-analysis rust-src rls --toolchain nightly-2021-03-13-x86_64-unknown-linux-gnu
         ```
-        
-6. Run your first  build `cargo build`
-7. Open `rslex-pachyderm/src/pachyderm_stream_handler/stream_handler.rs` and see if the Rust tooling recognizes it.
-8. Congrats, you are ready to Rust!
+6. Run `cargo check` to quickly verify
+7. Open a `.rs` file to see if vscode recognizes it.
+8. Congrats, you are ready to become a Rustacean!
+
+## How to build the rslex Python package
+
+Although rslex is a Rust library, our goal is to build a Python package that the end user can use.
+
+### Build and install in editable mode for development
+
+1. Pick a Python env, for example
+   ```
+   export PYBIN=/anaconda/envs/azureml_py36/bin
+   ```
+1. Copy the [`build-and-install-rslex.sh`](scripts/rslex/build-and-install-rslex.sh) to your VM in the root rslex directory
+1. Run `build-and-install-rslex.sh`
+1. The development mode version of the azureml-dataprep-rslex libary should now be installed in the environment specified by `PYBIN`
+
+### Build Python distrubtions
+
+If we don't want to wait for Microsoft to release a new version of rslex, then we need to build our own and distribute it as custom wheels.
+
+1. Copy [`build-wheel-for-distribution.sh`](scripts/rslex/build-wheel-for-distribution.sh) to your VM.
+1. Run `build-wheels.sh`
+1. Copy `language_integrations/azureml-dataprep-rslex/dist/*.whl` to this repo's `rslex-dist` directory.
 
 ## Troubleshooting this setup
 
@@ -142,11 +178,21 @@ dataset = Dataset.Tabular.from_json_lines_files(path=[(datastore, 'commit.branch
 print(dataset.to_pandas_dataframe())
 ```
 
-# Old but maybe still relevant
-
-[https://github.com/pachyderm/azureml-demo-syncer/blob/terraform/setup.md](https://github.com/pachyderm/azureml-demo-syncer/blob/terraform/setup.md)
+The Python side of the datarep library swallows up meaningful rslex errors, so if you get some generic error like
 
 ```
-add pdb.set_trace() to the following to see rslex errors from Python
-<python_env>/site-packages/azureml/dataprep/api/_rslex_executor.py
+Error Message: ScriptExecutionException was caused by StreamAccessException.
+  StreamAccessException was caused by ValidationException.
+    Attempting to get files from Datastore '(pachyderm_datastore)' of type 'Custom' in subscription: 'blah', resource group: 'blah', workspace: 'blah'.
+Datastore of this type is not curently supported.
 ```
+
+then try to add `pdb.set_trace()` to `<python_env>/site-packages/azureml/dataprep/api/_rslex_executor.py` to get the errors from rslex.
+
+# Old but still relephant
+
+https://github.com/pachyderm/azureml-demo-syncer/blob/terraform/setup.md
+
+https://github.com/pachyderm/azureml-demo-syncer/blob/terraform/packer.json
+
+
