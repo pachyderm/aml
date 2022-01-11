@@ -105,9 +105,16 @@ Run
 bash scripts/setup.sh
 ```
 
-<a name="step2-update-rslex">
+### How to connect to the Syncer VM
+
+The default username on the Syncer VM is `pachyderm`. This is useful for debugging and quickly fixing issues that might appear in the Syncer. You can also use the syncer's builtin `pachctl` to operate Pachyderm.
+
+```
+# From the root aml repo directory
+ssh pachyderm@$(cd terraform; terraform output -raw instance_ip)
+```
+
 ## Step 2 - Update rslex on your AML Compute
-</a>
 
 Install a custom built version of the `azureml-dataprep-rslex` library.
 
@@ -181,7 +188,7 @@ dataset = Dataset.get_by_name(workspace, name='Pachyderm repo poker - jsonl')
 dataset.to_pandas_dataframe()
 ```
 
-> Note: if you get errors, double check 1) the version of your azureml-dataprep libraries and make sure you followed [Step 2](#step2-update-rslex) and 2) the data you stored is valid.
+> Note: if you get errors, double check 1) the version of your azureml-dataprep libraries and make sure you followed [Step 2](#step-2---update-rslex-on-your-aml-compute) and 2) the data you stored is valid.
 
 Lets create a new version of the data:
 
