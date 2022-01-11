@@ -31,24 +31,34 @@ cd aml
 ```
 
 Log into Azure:
+
 ```
 az login
 ```
 
-Choose where you want to deploy Pachyderm and the syncer:
+Choose the Azure region where you want to deploy all resources:
+
 ```
 export TF_VAR_location="East US"
 ```
 
-If you're deploying with an existing AzureML workspace, the location above should match where your workspace is.
+> Note: if you're deploying with an existing AzureML workspace, the location above should match where your workspace is.
 
-Now we'll deploy the syncer VM and the AKS cluster and start Pachyderm on it.
+Optionally, specify the type of data you want to store.
 
-Optionally, specify whether you want the syncer to create File datasets (`files`, matches all files, for unstructured data) or Tabular datasets with json lines format (`jsonl`, matches `*.jsonl` and aggregates into a single table - in which case all json lines files in a given Pachyderm repo must have compatible schemas), or Tabular datasets with csv format (`delmited`, matches `*.csv` and aggregates into a single table - in which case all csv files in a given Pachyderm repo must have compatible schemas):
+[`FileDataset`](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.data.filedataset?view=azure-ml-py): matches all `files`, for unstructured data OR
+
+[`TabularDataset`](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.data.tabulardataset?view=azure-ml-py):
+- JSON Lines format (`jsonl`, matches `*.jsonl` and aggregates into a single table, in which case all json lines files in a given Pachyderm repo must have compatible schemas)
+- CSV format (`delmited`, matches `*.csv` and aggregates into a single table - in which case all csv files in a given Pachyderm repo must have compatible schemas)
+
+For example:
 
 ```
 export TF_VAR_pachyderm_syncer_mode="files" # or "jsonl" or "delimited"
 ```
+
+Now we'll deploy a Kubernetes cluster, install Pachyderm on it, then start the Syncer VM.
 
 ### Option 1: Automatically create a new AzureML workspace and resource group:
 
@@ -56,7 +66,7 @@ export TF_VAR_pachyderm_syncer_mode="files" # or "jsonl" or "delimited"
 bash scripts/setup.sh
 ```
 
-If you get errors about exceeding quota, try a different region (`TF_VAR_location`).
+> Note: if you get errors about exceeding quota, try a different region by configuring `TF_VAR_location`
 
 ### Option 2: Integrate Pachyderm with an existing AzureML workspace:
 
@@ -95,10 +105,13 @@ Run
 bash scripts/setup.sh
 ```
 
-
+<a name="step2-update-rslex">
 ## Step 2 - Update rslex on your AML Compute
+</a>
 
-Note: this step will no longer be necessary after Microsoft release a new version of rslex.
+Install a custom built version of the `azureml-dataprep-rslex` library.
+
+> Note: this step will no longer be necessary after Microsoft releases an official library with the Pachyderm integration built-in.
 
 From an AML notebook (create a new file in the "Notebooks" tab), connect to the compute instance you want to use with Pachyderm (creating one through the UI if necessary), and run:
 
@@ -109,49 +122,9 @@ From an AML notebook (create a new file in the "Notebooks" tab), connect to the 
 *Restart the Python Kernel for your notebook after the installation completes,
 for the changes to take effect.*
 
-*Note*: there might be some errors related to incompatible package versions, you can
-simply ignore those.
+> Note: there might be some errors related to incompatible package versions, you can simply ignore those.
 
-Now proceed with the demo or try some of the examples in the `examples/` folder:
-
-## Tutorial
-
-This tutorial uses structured JSON data, which requires running with `TF_VAR_pachyderm_syncer_mode="jsonl"`.
-
-From the directory where you ran `setup.sh`, run:
-
-```
-instance_ip="$(cd terraform; terraform output -raw instance_ip)"
-ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- '
-    echo "{\"name\": \"Gilbert\", \"wins\": [[\"straight\", \"7♣\"], [\"one pair\", \"10♥\"]]}
-{\"name\": \"Alexa\", \"wins\": [[\"two pair\", \"4♠\"], [\"two pair\", \"9♠\"]]}
-{\"name\": \"May\", \"wins\": []}
-{\"name\": \"Deloise\", \"wins\": [[\"three of a kind\", \"5♣\"]]}" > poker.jsonl
-    pachctl create repo poker
-    pachctl put file poker@master: -f poker.jsonl
-'
-```
-
-Then, go to the Datasets page in AML and observe that pachyderm commits are automatically populated in AML as Dataset versions!
-
-For a specific dataset version, click Consume and copy and paste the code into an AML notebook. Run it, and note that the data is visible.
-
-Then, run:
-```
-instance_ip="$(cd terraform; terraform output -raw instance_ip)"
-ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$instance_ip -- '
-    echo "{\"name\": \"Albert\", \"wins\": [[\"straight\", \"7♣\"], [\"one pair\", \"10♥\"]]}
-{\"name\": \"Joey\", \"wins\": [[\"two pair\", \"4♠\"], [\"two pair\", \"9♠\"]]}
-{\"name\": \"Luke\", \"wins\": []}
-{\"name\": \"Alysha\", \"wins\": [[\"three of a kind\", \"5♣\"]]}" > poker.jsonl
-    pachctl create repo poker
-    pachctl put file poker@master: -f poker.jsonl
-'
-```
-
-Now re-run the Consume code and show that it's updated, but then as the a-ha moment go back to the previous version and add `version="1"` to the Python code and show that you see the old version of the data - a-ha! Data versioning & reproducibility!
-
-## Advanced: connect to Pachyderm via local `pachctl`
+## Step 3 - Connect to Pachyderm
 
 * Install [pachctl](https://docs.pachyderm.com/latest/getting_started/local_installation/#install-pachctl)
 
@@ -169,6 +142,60 @@ pachctl version
 You should see that your local `pachctl` is able to connect to your Pachyderm cluster.
 You can now insert data as described in the [tutorial](#tutorial).
 
-## Examples
+## Tutorial
+
+This tutorial uses structured JSON data, which requires configuring `TF_VAR_pachyderm_syncer_mode="jsonl"`.
+
+First, create a Pachyderm repo:
+
+```
+pachctl create repo poker
+```
+
+Next, add some data:
+
+```
+cat <<EOF | pachctl put file poker@master:/poker.jsonl
+{"name": "Gilbert", "wins": [["straight", "7♣"], ["one pair", "10♥"]]}
+{"name": "Alexa", "wins": [["two pair", "4♠"], ["two pair", "9♠"]]}
+{"name": "May", "wins": []}
+{"name": "Deloise", "wins": [["three of a kind", "5♣"]]}
+EOF
+```
+
+Then, go to the Datasets page in AML and observe that Pachyderm commits are automatically populated in AML as Dataset versions!
+For a specific dataset version, click **Consume** and copy and paste the code into an AML notebook. Run it, and note that the data is visible.
+
+The Consume code should look something like:
+
+```python
+from azureml.core import Workspace, Dataset
+
+subscription_id = ''
+resource_group = ''
+workspace_name = ''
+
+workspace = Workspace(subscription_id, resource_group, workspace_name)
+
+dataset = Dataset.get_by_name(workspace, name='Pachyderm repo poker - jsonl')
+dataset.to_pandas_dataframe()
+```
+
+> Note: if you get errors, double check 1) the version of your azureml-dataprep libraries and make sure you followed [Step 2](#step2-update-rslex) and 2) the data you stored is valid.
+
+Lets create a new version of the data:
+
+```
+cat <<EOF | pachctl put file poker@master:/poker.jsonl
+{"name": "Albert", "wins": [["straight", "7♣"], ["one pair", "10♥"]]}
+{"name": "Joey", "wins": [["two pair", "4♠"], ["two pair", "9♠"]]}
+{"name": "Luke", "wins": []}
+{"name": "Alysha", "wins": [["three of a kind", "5♣"]]}
+EOF
+```
+
+Now re-run the Consume code and show that it's updated. As the *a-ha* moment, go back to the previous version and add `version="1"` to `Dataset.get_by_name()` and show that you see the old version of the data - a-ha! Data versioning & reproducibility!
+
+## More Examples
 
 [Migrate data from Blob/ADLS Gen2 to Pachyderm](examples/azure_storage/README.md)
