@@ -79,4 +79,5 @@ RestartSec=5s
 WantedBy=multi-user.target
 EOF
 
+# 'systemctl enable' both starts the syncer service and configures systemd to run it on boot
 sudo systemctl enable pachyderm-aml-syncer.service
