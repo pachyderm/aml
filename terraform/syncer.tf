@@ -1,3 +1,10 @@
+data "azurerm_shared_image_version" "syncer_image" {
+  name                = "0.0.7"
+  image_name          = "aml_pachyderm"
+  gallery_name        = "gallery"
+  resource_group_name = "packer"
+}
+
 resource "azurerm_public_ip" "pip" {
   name                = "publicip-${random_id.deployment.hex}"
   resource_group_name = local.resource_group_name
@@ -74,18 +81,7 @@ resource "azurerm_linux_virtual_machine" "syncer" {
     public_key = file("~/.ssh/id_rsa.pub")
   }
 
-  source_image_reference {
-    publisher = "pachyderminc1585170006545"
-    offer     = "pachyderm_aml_enablement-preview" // TODO remove -preview
-    sku       = "base-aml-pachyderm-plan"
-    version   = "0.0.6"
-  }
-
-  plan {
-    name      = "base-aml-pachyderm-plan"
-    product   = "pachyderm_aml_enablement-preview" // TODO remove -preview
-    publisher = "pachyderminc1585170006545"
-  }
+  source_image_id = data.azurerm_shared_image_version.syncer_image.id
 
   os_disk {
     storage_account_type = "Standard_LRS"
