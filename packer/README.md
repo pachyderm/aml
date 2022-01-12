@@ -1,8 +1,8 @@
 # Syncer VM and Azure Marketplace
 
-We use HashiCorp Packer to build a hardened Azure VM image, then publish to [Azure Marketplace]() via [Microsoft Partner Center]().
+We use HashiCorp Packer to build a hardened Azure VM image, then publish to Azure Marketplace via Microsoft Partner Center.
 
-At a high level, the way this works is
+How this works at a high level:
 
 1. Use Packer to build an Azure VM image
 1. Go to [our Microsoft Partner Center page](https://partner.microsoft.com/en-us/dashboard/commercial-marketplace/offers/bb37438-c75e-4024-8a25-ba35a3f51663/overview), and create a new VM offering based on the new image published
