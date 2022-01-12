@@ -5,7 +5,7 @@ We use HashiCorp Packer to build a hardened Azure VM image, then publish to [Azu
 At a high level, the way this works is
 
 1. Use Packer to build an Azure VM image
-1. Go to [Microsoft Partner Center](https://partner.microsoft.com/en-us/dashboard/commercial-marketplace/offers/bb37438-c75e-4024-8a25-ba35a3f51663/overview), and create a new VM offering based on the new image published
+1. Go to [our Microsoft Partner Center page](https://partner.microsoft.com/en-us/dashboard/commercial-marketplace/offers/bb37438-c75e-4024-8a25-ba35a3f51663/overview), and create a new VM offering based on the new image published
 1. Wait for Microsoft to approve the offer (<3 business days)
 1. Once approved, you should eventually see an Azure Marketplace preview like [this](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/pachyderminc1585170006545.pachyderm_aml_enablement-preview?tab=Overview&flightCodes=47bdffae-aa2f-4fd6-8f28-f7d784850ee1)
 1. Now you can update [syncer.tf](https://github.com/pachyderm/aml/blob/main/terraform/syncer.tf#L81) with the new version
