@@ -30,14 +30,31 @@ To build a new version:
 
 ##  How to use the image
 
-When we ran the packer command above, we actually created two things:
-- a simple Azure VM image
-   - localized to the our resource group only
-- a VM image version that is part of a Azure compute gallery
-   - used by Marketplace to offer VM services to the public
+We want to use the VM image we just built directly, without waiting for Microsoft to approve and publish the preview VM on the marketplace.
+To do that, you need to remove references to the marketplace VM image, and instead use `source_image_id `, then point it to the resource you just created.
+
+It will look something like:
+
+```hcl
+data "azurerm_shared_image_version" "syncer_image" {
+  name                = "0.0.1"  // Change this to the new version
+  image_name          = "aml_pachyderm"
+  gallery_name        = "gallery"
+  resource_group_name = "packer"
+}
+
+resource "azurerm_linux_virtual_machine" "syncer" {
+    ...
+    
+    source_image_id = data.azurerm_shared_image_version.syncer_image.id
+
+    ...
+}
+```
+
+> Check out https://github.com/pachyderm/aml/blob/terraform-custom-syncer/terraform/syncer.tf#L84 for a full example
 
 Reference:
 - [Azure compute gallery](https://docs.microsoft.com/en-us/azure/virtual-machines/shared-image-galleries)
 - [How to use Packer with Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/build-image-with-packer)
 
-If you want to test out your VM image and not have to wait for Microsoft's approval on the Marketplace, then you can manually modify `syncer.tf` to use the newly built image.
