@@ -80,8 +80,6 @@ If you encounter an error like “Failed to start Rust server” while opening u
 
 # Relephant info
 
-Start here: `[readme.md](http://readme.md)` for example `cargo` commands
-
 `rslex/src/execution/operations/get_files.rs`
 
 - `get_files()` this is the entrypoint called by the Python client to get files for a Dataset

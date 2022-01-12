@@ -99,11 +99,13 @@ export TF_VAR_existing_resource_group_name="existing-resource-group"
 export TF_VAR_existing_workspace_name="existing-workspace"
 ```
 
-Run
+Run the setup script and wait for the Syncer VM to come online.
 
 ```
 bash scripts/setup.sh
 ```
+
+> Note: the Syncer VM is based on a Marketplace VM image built using packer. For more info go to [VM image docs](packer/README.md)
 
 ### How to connect to the Syncer VM
 
