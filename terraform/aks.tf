@@ -22,6 +22,7 @@ resource "azurerm_kubernetes_cluster" "example" {
 }
 
 output "client_certificate" {
+  sensitive = true
   value = var.skip_pachyderm_deploy == "" ? azurerm_kubernetes_cluster.example[0].kube_config.0.client_certificate : ""
 }
 

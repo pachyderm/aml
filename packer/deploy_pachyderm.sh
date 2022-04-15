@@ -3,7 +3,7 @@ set -e
 
 source /home/pachyderm/env.sh
 
-PACHD_VERSION='2.0.0-rc.1'
+PACHD_VERSION='2.1.6'
 
 if [[ -z "$SKIP_PACHYDERM_DEPLOY" ]]; then
     helm repo add pach https://helm.pachyderm.com

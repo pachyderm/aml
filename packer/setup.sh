@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-PACHD_VERSION='2.0.0-rc.1'
+PACHD_VERSION='2.1.6'
 
 # Install dependencies
 sudo apt-get update && apt-get upgrade -y
@@ -41,7 +41,7 @@ sudo chown -R pachyderm /home/pachyderm
 # Do everything as "pachyderm" user
 sudo -i -u pachyderm bash << EOF
 python3 -m pip install --upgrade pip
-python3 -m pip install setuptools-rust==0.12.1 python-pachyderm==7.0.0rc1
+python3 -m pip install setuptools-rust==0.12.1 python-pachyderm
 
 # Install dev build of azureml-dataprep which supports custom datastores
 # These two are compatible versions
